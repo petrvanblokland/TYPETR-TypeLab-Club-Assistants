@@ -4,7 +4,7 @@
 #    It works on the current font.
 #
 # 
-import sys
+import sys, os
 import importlib
 from math import *
 
@@ -13,19 +13,22 @@ import drawBot
 
 from mojo.subscriber import Subscriber, WindowController, registerGlyphEditorSubscriber, unregisterGlyphEditorSubscriber
 
+# Add paths to libs in sibling repositories. The assistantLib module contains generic code for Asistanta.s
+PATHS = ['../TYPETR-TypeLab-Club-Assistants/']
+for path in PATHS:
+    if not os.path.exists(path):
+        print(f'@@@ Locate this file on the top of the project repository and make sure that {path} exists.')
+    if not path in sys.path:
+        print(f'@@@ Append {path} to sys.path')
+        sys.path.append(path)
+
+
 import assistantLib
 importlib.reload(assistantLib)
 
 # Decide on the type of window for the Assistant.
 WindowClass = Window # Will hide behind other windows, if not needed.
 #WindowClass = FloatingWindow # Is always available, but it can block the view of other windows if the Asistant window grows in size.
-
-# Add paths to libs in sibling repositories. The assistantLib module contains generic code for Asistanta.s
-PATHS = ['../TYPETR-Assistants/']
-for path in PATHS:
-    if not path in sys.path:
-        print('@@@ Append to sys.path', path)
-        sys.path.append(path)
 
 W, H = 400, 300
 M = 20

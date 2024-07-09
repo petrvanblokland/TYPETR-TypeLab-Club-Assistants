@@ -1,29 +1,33 @@
 # Getting started with TYPETR-Assistants
 
-The current structure of creating a project Assistant is the making of two new classes that inheriting from library classes which implement a range of functions. 
+The current structure of creating a project Assistant is the making of two new classes that inherit from library classes. This way a range of functions is already implemented. 
 
-From a pure software-development point of view there may be more sustainable ways to implement these function, but inheriting classes is a very practical and flexible way to bring the functions together.
+From a pure software-development point of view there may be more sustainable ways to implement these functions, but inheriting classes is a very practical and flexible way to bring the functions together.
 
-During the development of the design process functions can simply be added and removed if the stage of the process requires that. 
+The functions are organized in separated module classes. E.g. there is a module that takes care of spacing and kerning. Another module handles the automatic placement of anchors. And another one knows how to convert between Quadratic and Bezier curves.
 
-Each Assistant works on a local set of UFO/ files. In order to detect where they are, an Assistant needs to find at least one open UFO fonts. *(This limitation is likely to be solved in future implementations)*
+During the development of the design process, modules can simply be added or removed from a project assistant, if the stage of the process requires that. 
 
-**Due to possible incompatibilities in indenting white space, it is best not to copy/paste code from this MarkDown file. Instead, use the intermediate sources as stored in myAssistants/**
+Each Assistant works on a local set of UFO/ files. In order to detect where they are, an Assistant needs to find at least one open UFO font. *(This limitation is likely to be solved in future implementations)*
+
+**Due to possible incompatibilities in indenting white space, it is best not to copy/paste code from this MarkDown file. Instead, use the intermediate sources that are available in the myAssistants/ directory.**
 
 ### Warnings
 
-Since Assistant are ongoing development, there are some warning necessary:
+Since Assistant are ongoing development, some warnings are necessary:
 
-* Assistants do not work very well if UFOs are opened from other projects.
-* If missing **MasterData** or **GlyphData** is found, close RoboFont and add these records to the sources first.
-* In case UFO masters are renamed, make sure to change it in the **MASTER_DATA** as well.
-* Assistant try to keep track of opened fonts in preference of UFO fonts that are opened in the background. However, RoboFont sometimes get confused, e.g. in case an [Update] is done. Best it so quit RoboFont or at least close the Assistant window. 
+* Assistants do not work very well if there are any UFOs are opened from other projects, because it won’t be able to find their **MasterData** descriptions.
+* If missing **MasterData** or **GlyphData** are found, close RoboFont and add these records to the sources first.
+* In case UFO masters are renamed, make sure to change the corresponding names in the **MASTER_DATA** as well.
+* Assistants try to keep track of opened fonts in preference of UFO fonts that are opened in the background. However, RoboFont sometimes gets confused, e.g. in the case an [Update] is done. Best is so quit RoboFont or at least close the Assistant window and then start the Assistant again. 
 
 In all these cases, make sure to backup your UFO files. 
 
+**Using Assistant code in production mode, while it is under development offers many advantages and opportunities, but it is also dangerous, “living on the edge”. TYPETR and TypeLab-Club has no responsibility to any damage to your work or UFO’s, but we are available of course to assist recovery.**
+
 ## Getting started with MyAssistant-001.py
 
-* Copy this file to your own local repository directory (e.g. *MyProject/*) that also contains a directory with UFO files (e.g. in *ufo/*) and rename it to *MyAssistant-001.py*
+* Copy the file *MyAssistant-001.py* to your own local repository directory (e.g. *MyProject/*) that also contains a directory with UFO files (e.g. in *ufo/*) and rename it to *MyAssistant-001.py*
 * Make sure that this respository directory *MyProject/* is sibling to the TYPETR-*Assistants* diredctory. This way we can find the libraries by *../TYPETR-Assistants/assistantLib/*
 * The 3 digits in the *MyAssistant-001.py* file name is a version number. Since working on the Assistant is an ongoing process during a project, you want to be able to got back to previous, other than the versioning of GitHub. Working together with a group of designers, it is clear which version is the latest and which is under beta-development.
 * Open the new *MyAssistant-001.py* in RoboFont and open 
@@ -36,19 +40,20 @@ This first Assistant code contain these lines:
 
 ~~~
 
-import sys
+import sys, os
     
-# Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ['../TYPETR-TypeLab-Club-Assistants/']
 for path in PATHS:
+    if not os.path.exists(path):
+        print(f'@@@ Locate this file on the top of the project repository and make sure that {path} exists.')
     if not path in sys.path:
-        print('@@@ Append to sys.path', path)
+        print(f'@@@ Append {path} to sys.path')
         sys.path.append(path)
 ~~~
 
 Running this in RoboFont shows the following response: 
 
-**@@@ Append to sys.path ../TYPETR-Assistants/**
+**@@@ Append to sys.path ../TYPETR-TypeLab-Club-Assistants/**
 
 * This means that RoboFont could find the *TYPETR-Assistants** directory and installed it as a path. From here we can import the needed libraries.
 * Running it again does not show anything, as the path connection is already made. Only if you restart RoboFont you will see this response again.

@@ -1,16 +1,17 @@
 # -*- coding: UTF-8 -*-
 #
+#    FullAssistant-000.py, use as reference.
+#
 #    Assistant for RoboFont4
 #    Belongs to Upgrade Neon VF project
 #
-#    Hairlåine tube: ]
 import sys
 from vanilla import *
 
 import importlib
     
 # Add paths to libs in sibling reposi]ries
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)
