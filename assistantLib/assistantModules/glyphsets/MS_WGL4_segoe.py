@@ -712,7 +712,7 @@ class MS_GlyphSet(GlyphSet):
        'Rrotunda': GD(name='Rrotunda', uni=0xA75A, hex='A75A', l='three', r='three', c='Ꝛ'),
        'Rsmall': GD(name='Rsmall', uni=0x0280, hex='0280', c='ʀ', r='R', isSc=True),
        'Rsmallinverted': GD(name='Rsmallinverted', uni=0x0281, hex='0281', l2r='Rsmall', r2l='Rsmall', c='ʁ'),
-       'Rsmallinvertedmod': GD(name='Rsmallinvertedmod', uni=0x02B6, hex='02B6', c='ʶ', l2r='Rmod', r2l='Rmod', isMod=True),
+       'Rsmallinvertedmod': GD(name='Rsmallinvertedmod', uni=0x02B6, hex='02B6', c='ʶ', l='Rmod', r='Rmod', isMod=True),
        'Rstroke': GD(name='Rstroke', uni=0x024C, hex='024C', c='Ɍ', l='Eth', base='R', anchors=['top', 'middle', 'bottom']),
        'Rtail': GD(name='Rtail', uni=0x2C64, hex='2C64', l='H', r='R', c='Ɽ'),
        'RumRotunda': GD(name='RumRotunda', uni=0xA75C, hex='A75C', l='four', r='four', c='Ꝝ'),
