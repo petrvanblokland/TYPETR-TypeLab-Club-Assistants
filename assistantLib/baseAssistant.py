@@ -46,19 +46,19 @@ from mojo.events import extractNSEvent
 
 from fontTools.misc.transform import Transform
 
-import assistantLib.assistantParts.data
-importlib.reload(assistantLib.assistantParts.data)
-from assistantLib.assistantParts.data import MasterData
+import assistantLib.assistantModules.data
+importlib.reload(assistantLib.assistantModules.data)
+from assistantLib.assistantModules.data import MasterData
 
-import assistantLib.assistantParts.spacingKerning.kerningManager
-importlib.reload(assistantLib.assistantParts.spacingKerning.kerningManager)
-from assistantLib.assistantParts.spacingKerning.kerningManager import KerningManager
+import assistantLib.assistantModules.spacingKerning.kerningManager
+importlib.reload(assistantLib.assistantModules.spacingKerning.kerningManager)
+from assistantLib.assistantModules.spacingKerning.kerningManager import KerningManager
 
 import assistantLib.toolbox.glyphAnalyzer
 importlib.reload(assistantLib.toolbox.glyphAnalyzer)
 from assistantLib.toolbox.glyphAnalyzer import GlyphAnalyzer
 
-from assistantLib.assistantParts.glyphsets.anchorData import AD
+from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 # Add paths to libs in sibling repositories
 PATHS = ('../TYPETR-Assistants/',)

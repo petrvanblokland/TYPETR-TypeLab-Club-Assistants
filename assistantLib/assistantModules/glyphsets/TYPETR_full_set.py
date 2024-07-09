@@ -9,9 +9,9 @@
 
 from copy import deepcopy
 
-from assistantLib.assistantParts.glyphsets.glyphData import GD 
-from assistantLib.assistantParts.glyphsets.anchorData import AD
-from assistantLib.assistantParts.glyphsets.glyphSet import GlyphSet
+from assistantLib.assistantModules.glyphsets.glyphData import GD 
+from assistantLib.assistantModules.glyphsets.anchorData import AD
+from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet
 
 class TYPETR_GlyphSet(GlyphSet):
     """GlyphSet for the default TYPETR families

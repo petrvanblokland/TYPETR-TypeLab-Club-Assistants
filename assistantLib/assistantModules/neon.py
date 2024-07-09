@@ -29,7 +29,7 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 
 def roundFloat(f):
     error = 1000000.
@@ -697,7 +697,7 @@ class OutlinePen(BasePen):
         self.drawPoints(pointPen)
         return glyph
 
-class AssistantPartNeon(BaseAssistantPart):
+class AssistantModuleNeon(BaseAssistantModule):
     #    N E O N
 
     NEON_STROKE_DISTANCE_MARKER_COLOR = 0.2, 0.1, 0.8, 1

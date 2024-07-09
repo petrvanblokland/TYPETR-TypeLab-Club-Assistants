@@ -18,11 +18,11 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 
 FACTOR = 1.340   # This estimated value gives amazingly accurate conversion.
 
-class AssistantPartCurves(BaseAssistantPart):
+class AssistantModuleCurves(BaseAssistantModule):
     """The Curves assistant part converts between Quadratics and Bezier.
     """
     def initMerzCurves(self, container):

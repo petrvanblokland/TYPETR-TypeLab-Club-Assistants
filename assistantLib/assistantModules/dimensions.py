@@ -17,13 +17,13 @@ from vanilla import *
 #        print('@@@ Append to sys.path', path)
 #        sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
-from assistantLib.assistantParts.data import * # Import anchors names
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
+from assistantLib.assistantModules.data import * # Import anchors names
 
 MAX_LINES = 80
 MAX_MEASURES = 50
 
-class AssistantPartDimensions(BaseAssistantPart):
+class AssistantModuleDimensions(BaseAssistantModule):
     """The Dimensions assistant part calculates relevant measures in the glyph and shows them on the side. 
     In the case of diagonals, it shows the distances inside diagonal stems.
     """

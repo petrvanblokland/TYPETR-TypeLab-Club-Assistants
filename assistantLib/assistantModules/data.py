@@ -16,11 +16,11 @@
 #
 import importlib
 
-from assistantLib.assistantParts.glyphsets.glyphData import * 
-from assistantLib.assistantParts.glyphsets.glyphSet import GlyphSet
-import assistantLib.assistantParts.glyphsets.anchorData
-importlib.reload(assistantLib.assistantParts.glyphsets.anchorData)
-from assistantLib.assistantParts.glyphsets.anchorData import AD
+from assistantLib.assistantModules.glyphsets.glyphData import * 
+from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet
+import assistantLib.assistantModules.glyphsets.anchorData
+importlib.reload(assistantLib.assistantModules.glyphsets.anchorData)
+from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 class MasterData:
     """Storing additional data about masters, without storing the actual RFont instance. 

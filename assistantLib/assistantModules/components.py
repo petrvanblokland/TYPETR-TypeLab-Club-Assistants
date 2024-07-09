@@ -18,11 +18,11 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
-from assistantLib.assistantParts.glyphsets.anchorData import AD
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
+from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 
-class AssistantPartComponents(BaseAssistantPart):
+class AssistantModuleComponents(BaseAssistantModule):
     """Fix components, positions and baseGlyph. Add component and delete components as defined in the GlyphData.
     """
 

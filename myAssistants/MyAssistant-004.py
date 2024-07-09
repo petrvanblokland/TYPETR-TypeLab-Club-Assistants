@@ -18,16 +18,16 @@ for path in PATHS:
 
 from assistantLib.baseAssistant import (
 	Assistant, AssistantController)
-from assistantLib.assistantParts.overlay import AssistantPartOverlay
+from assistantLib.assistantModules.overlay import AssistantModuleOverlay
 
 class MyAssistant(
         Assistant, 
-        AssistantPartOverlay, # Add library function part source as inherited class.
+        AssistantModuleOverlay, # Add library function part source as inherited class.
 	):
     pass	
 class MyAssistantController(
         AssistantController,
-        AssistantPartOverlay, # Add library function part source as inherited class.
+        AssistantModuleOverlay, # Add library function part source as inherited class.
 	):    
     W = 450
     H = 250

@@ -17,10 +17,10 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
-from assistantLib.assistantParts.data import * # Import anchors names
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
+from assistantLib.assistantModules.data import * # Import anchors names
 
-class AssistantPartGuidelines(BaseAssistantPart):
+class AssistantModuleGuidelines(BaseAssistantModule):
     """The Guidelines assistant part handles all guideline positions. If there is a guidelines definition defined
     in the masterData, then take these values. Otherwise do some guessing from the current font.
     """

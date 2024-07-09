@@ -37,11 +37,11 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
-from assistantLib.assistantParts.data import * # Import anchors names
-from assistantLib.assistantParts.glyphsets.anchorData import AD
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
+from assistantLib.assistantModules.data import * # Import anchors names
+from assistantLib.assistantModules.glyphsets.anchorData import AD
 
-class AssistantPartAnchors(BaseAssistantPart):
+class AssistantModuleAnchors(BaseAssistantModule):
     """The Anchors assistant part handles all creation and placement of anchors.
     Also it supports the display of the diacritics clouds and it positions diacitics of related
     base glyphs if their position does not sychronize with the position of their anchors.

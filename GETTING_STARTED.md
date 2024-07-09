@@ -100,38 +100,38 @@ Our new **MyAssistant** class always must  inherit from the **Assistant** class,
 
 The new **MyAssistantController** class always must inherit from the **AssistantController** class, thus implementing everthing that the base Assistant Controller needs.
 
-* The class variable **MASTER_DATA** is a placeholder for now. It will later contain **MasterData** instances, holding all meta data about UFO masters that the Assistant function parts need.
+* The class variable **MASTER_DATA** is a placeholder for now. It will later contain **MasterData** instances, holding all meta data about UFO masters that the Assistant function modules need.
 * The class variable **PROJECT_PATH** tel;s the Assistant what the file path of the project is. This way it can locate all resources by relative path, such as *ufo/* UFO file paths.
 
 Running this code should show no error, it opens an empty small (250 x 250) default Assistant window, with a default title.
 
 ![w=250](docs/images/myAssistant-002.png)
 
-We are going to fill the window with a function part in the next version.
+We are going to fill the window with a function module in the next version.
 
 ## MyAssistant-003.py
 
-Adding function parts to the Assistant requires some additions. We’ll do it step by step for the first one.
+Adding function modules to the Assistant requires some additions. We’ll do it step by step for the first one.
 
-Adding the function part “Overlay” needs an import for that sub class.
-
-~~~
-
-from assistantLib.assistantParts.overlay import AssistantPartOverlay
+Adding the function module “Overlay” needs an import for that sub class.
 
 ~~~
 
-This class it added as inheriting source for both **MyAssistant** and **MyAssistantController**. From a “clean” programming point of view this is not entiry the best way to solve this, by since these classes a to be used by a limited audience of users it is a pragmatic way to keep all functionality of the function parts such as “Overlay” together and accesseable.
+from assistantLib.assistantModules.overlay import AssistantModuleOverlay
+
+~~~
+
+This class it added as inheriting source for both **MyAssistant** and **MyAssistantController**. From a “clean” programming point of view this is not entiry the best way to solve this, by since these classes a to be used by a limited audience of users it is a pragmatic way to keep all functionality of the function modules such as “Overlay” together and accesseable.
 
 ~~~
 
 class MyAssistant(
         Assistant, 
-        AssistantPartOverlay, 
+        AssistantModuleOverlay, 
 	):
 ~~~
 
-and similar for the **MyAssistantController** class. Since the “Overlay” function part needs more horizontal space, the over window width is changed to 450. It could be an optimization in the future to ask the inplemented function parts for their preferred width and height.
+and similar for the **MyAssistantController** class. Since the “Overlay” function module needs more horizontal space, the over window width is changed to 450. It could be an optimization in the future to ask the inplemented function modules for their preferred width and height.
 
 The window title is changed too.
 
@@ -139,7 +139,7 @@ The window title is changed too.
 
 class MyAssistantController(
         AssistantController,
-        AssistantPartOverlay, 
+        AssistantModuleOverlay, 
 	):    
     W = 450
     H = 250
@@ -152,9 +152,9 @@ This version of the Assistant now opens a (still empty) larger window.
 
 ![](docs/images/myAssistant-003.png)
 
-The reason that no controls of the “Overlay” function part are visible yet, is that we “manually” need to inform the **MyAssistant** and ** MyAssistantController** which of the “Overlay” event we want to use. This process could have been automated (and maybe it partially will in the future), but for now it’s a visible choice to add the list in the project Assistant source. In practice it allows debugging or disabling some functions, e.g. if a better response time of events is needed.
+The reason that no controls of the “Overlay” function module are visible yet, is that we “manually” need to inform the **MyAssistant** and ** MyAssistantController** which of the “Overlay” event we want to use. This process could have been automated (and maybe it partially will in the future), but for now it’s a visible choice to add the list in the project Assistant source. In practice it allows debugging or disabling some functions, e.g. if a better response time of events is needed.
 
-Each of the RoboFont event calls can be subscribed on by function parts.
+Each of the RoboFont event calls can be subscribed on by function modules.
 
 ## MyAssistant-004.py
 
@@ -177,15 +177,15 @@ This way the controller knows the class for each **MyAssistant** instance to cre
 	]
 ~~~
 
-The class **BUILD_UI_METHODS** contains a list of method names in inherited function parts that need building of their UI components. 
+The class **BUILD_UI_METHODS** contains a list of method names in inherited function modules that need building of their UI components. 
 
-Later we’ll be adding more method names here, when more functions parts get implmentent. 
+Later we’ll be adding more method names here, when more functions modules get implmentent. 
 
 ![](docs/images/MyAssistant-004.png)
 
-The UI is building in the order of this list. So this gives the developer control on the order of function part UI’s. The next UI will be placed under the previous one.
+The UI is building in the order of this list. So this gives the developer control on the order of function module UI’s. The next UI will be placed under the previous one.
 
-Since we just did build the UI without any event subscription, the current version will not respond to any events in the EditorWindow. Nor does the “Overlay” function part do any drawing yet. We’ll add that in the next version.
+Since we just did build the UI without any event subscription, the current version will not respond to any events in the EditorWindow. Nor does the “Overlay” function module do any drawing yet. We’ll add that in the next version.
 
 ## MyAssistant-005.py
 
@@ -225,3 +225,4 @@ In order to make the **MyAssistant** respond to any RoboFont event, we’ll need
 
 ~~~
 
+## Availalbe modules

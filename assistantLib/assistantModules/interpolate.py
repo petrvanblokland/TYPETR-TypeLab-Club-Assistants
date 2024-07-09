@@ -17,11 +17,11 @@ for path in PATHS:
         sys.path.append(path)
 
 from mojo.roboFont import OpenFont, AllFonts, RGlyph, RPoint
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 #@@@ Make interpolation method independent, so it can be used in scripts
 #from assistantLib.toolbox.interpolate import interpolateGlyph
 
-class AssistantPartInterpolate(BaseAssistantPart):
+class AssistantModuleInterpolate(BaseAssistantModule):
     """The Interpolate assistant part, checks on interpolation errors and
     interpolates glyphs is the UFO is defined as instance, instead of master.
     """

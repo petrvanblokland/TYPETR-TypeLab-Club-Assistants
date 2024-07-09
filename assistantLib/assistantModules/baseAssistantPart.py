@@ -4,8 +4,8 @@
 #     Usage by MIT License
 # ..............................................................................
 #
-#   baseAssistantPart.py
+#   baseAssistantModule.py
 #
 
-class BaseAssistantPart:
+class BaseAssistantModule:
     pass    

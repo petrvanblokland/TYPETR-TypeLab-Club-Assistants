@@ -18,11 +18,11 @@ for path in PATHS:
 
 from assistantLib.baseAssistant import (
 	Assistant, AssistantController)
-from assistantLib.assistantParts.overlay import AssistantPartOverlay
+from assistantLib.assistantModules.overlay import AssistantModuleOverlay
 	
 class MyAssistant(
         Assistant, 
-        AssistantPartOverlay, # Add library function part source as inherited class.
+        AssistantModuleOverlay, # Add library function part source as inherited class.
 	):
     INIT_MERZ_METHODS = [ # These get called on opening the Installer window.
         'initMerzOverlay',
@@ -30,7 +30,7 @@ class MyAssistant(
 
 class MyAssistantController(
         AssistantController,
-        AssistantPartOverlay, # Add library function part source as inherited class.
+        AssistantModuleOverlay, # Add library function part source as inherited class.
 	):    
     W = 450
     H = 250

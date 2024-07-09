@@ -15,7 +15,7 @@
 #
 # Note that names cannot start with an underscore, or else the cannot be imported by other sources.
 #
-from assistantLib.assistantParts.glyphsets.anchorData import AD 
+from assistantLib.assistantModules.glyphsets.anchorData import AD 
 
 class GlyphData:
     """Glyph data element that contains all individual data for glyphs.

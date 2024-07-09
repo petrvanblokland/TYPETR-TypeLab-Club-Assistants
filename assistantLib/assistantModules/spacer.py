@@ -28,8 +28,8 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
-from assistantLib.assistantParts.data import * # Import anchors names
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
+from assistantLib.assistantModules.data import * # Import anchors names
 
 ARROW_KEYS = [NSUpArrowFunctionKey, NSDownArrowFunctionKey,
         NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey,
@@ -50,7 +50,7 @@ class KerningLineGlyphPosition:
         self.lineIndex = lineIndex
         self.sampleKerningIndex = sampleKerningIndex
 
-class AssistantPartSpacer(BaseAssistantPart):
+class AssistantModuleSpacer(BaseAssistantModule):
     """The Spacer assistant part handles all margins and widths that can be automated.
     It makes guesses based on the names of glyphs, existing components, values in the MasterData
     and Erik van Blokland's Similarity.

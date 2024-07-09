@@ -71,7 +71,7 @@ Each range processor has a handy debugginh print function that will show an over
 * `GlyphName.uniNumber` integer, the unicode number we're working on.
 * `GlyphName.uniName` string, the original unicode character name
 * `GlyphName.processedUniName` string, the edited name.
-* `GlyphName.suffixParts` list of name parts that are added at the end. Please use:
-* `GlyphName.suffix(namePart)` use this method to add name parts to the suffix list.
+* `GlyphName.suffixAssistantModules` list of name parts that are added at the end. Please use:
+* `GlyphName.suffix(nameAssistantModule)` use this method to add name parts to the suffix list.
 * `GlyphName.replace(oldPattern, [newPattern])` If no newPattern is given it will assume it is `""` and delete `oldPattern`
-* `GlyphName.edit(oldPattern, [*suffixes])` This is more elaborate: it will remove `oldPattern` from the name, and then append any number of suffix strings to `GlyphName.suffixParts`. When the processing is done all strings in suffixParts are appended to the end of the glyph name.
+* `GlyphName.edit(oldPattern, [*suffixes])` This is more elaborate: it will remove `oldPattern` from the name, and then append any number of suffix strings to `GlyphName.suffixAssistantModules`. When the processing is done all strings in suffixAssistantModules are appended to the end of the glyph name.

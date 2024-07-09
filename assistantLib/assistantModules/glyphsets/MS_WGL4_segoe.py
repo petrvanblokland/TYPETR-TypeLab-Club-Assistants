@@ -7,9 +7,9 @@
 #   MS_WGL3_segoe.py
 #
 
-from assistantLib.assistantParts.glyphsets.glyphData import *
-from assistantLib.assistantParts.glyphsets.glyphSet import GlyphSet
-from assistantLib.assistantParts.glyphsets.anchorData import AD
+from assistantLib.assistantModules.glyphsets.glyphData import *
+from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet
+from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 class MS_GlyphSet(GlyphSet):
     """GlyphSet for the SegoeUI family

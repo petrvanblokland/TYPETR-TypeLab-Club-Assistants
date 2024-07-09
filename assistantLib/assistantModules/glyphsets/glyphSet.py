@@ -10,8 +10,8 @@ from copy import deepcopy
 import codecs
 import os
 
-from assistantLib.assistantParts.glyphsets.glyphData import *
-from assistantLib.assistantParts.glyphsets.anchorData import AD 
+from assistantLib.assistantModules.glyphsets.glyphData import *
+from assistantLib.assistantModules.glyphsets.anchorData import AD 
 
 class GlyphSet:
     """GlyphSet behaves like a dictionary of GlyphData instances.
@@ -193,7 +193,7 @@ class GlyphSet:
 #     %s
 #
 try:
-    from assistantLib.assistantParts.glyphsets.glyphData import *
+    from assistantLib.assistantModules.glyphsets.glyphData import *
 except ModuleNotFoundError:
     from glyphData import *
 

@@ -20,7 +20,7 @@ from assistantLib.similarity.cosineSimilarity import cosineSimilarity, SimilarGl
 
 from assistantLib.kerningSamples import SAMPLES, CYRILLIC_KERNING, GREEK_KERNING
 # Seed relation between glyphs as start for similarity groups
-from assistantLib.assistantParts.glyphsets.groupBaseGlyphs import *
+from assistantLib.assistantModules.glyphsets.groupBaseGlyphs import *
 
 # Defines types of spacing dependencies
 SPACING_TYPES_LEFT = ('', 'l', 'ml', 'r2l')

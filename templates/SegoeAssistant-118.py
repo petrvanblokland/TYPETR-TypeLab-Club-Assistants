@@ -19,26 +19,26 @@ for path in PATHS:
         sys.path.append(path)
 
 import assistantLib.baseAssistant
-import assistantLib.assistantParts.data
-import assistantLib.assistantParts.builder
-import assistantLib.assistantParts.overlay
-import assistantLib.assistantParts.italicize
-import assistantLib.assistantParts.curves
-import assistantLib.assistantParts.contours
-import assistantLib.assistantParts.components
-import assistantLib.assistantParts.dimensions
-import assistantLib.assistantParts.interpolate
-import assistantLib.assistantParts.familyOverview
-import assistantLib.assistantParts.anchors
-import assistantLib.assistantParts.groups
-import assistantLib.assistantParts.spacer
-import assistantLib.assistantParts.guidelines
-import assistantLib.assistantParts.glyphsets.anchorData
-import assistantLib.assistantParts.glyphsets.groupBaseGlyphs
-import assistantLib.assistantParts.glyphsets.glyphSet
-import assistantLib.assistantParts.glyphsets.glyphData
-import assistantLib.assistantParts.glyphsets.MS_WGL4_segoe
-import assistantLib.assistantParts.spacingKerning.kerningManager
+import assistantLib.assistantModules.data
+import assistantLib.assistantModules.builder
+import assistantLib.assistantModules.overlay
+import assistantLib.assistantModules.italicize
+import assistantLib.assistantModules.curves
+import assistantLib.assistantModules.contours
+import assistantLib.assistantModules.components
+import assistantLib.assistantModules.dimensions
+import assistantLib.assistantModules.interpolate
+import assistantLib.assistantModules.familyOverview
+import assistantLib.assistantModules.anchors
+import assistantLib.assistantModules.groups
+import assistantLib.assistantModules.spacer
+import assistantLib.assistantModules.guidelines
+import assistantLib.assistantModules.glyphsets.anchorData
+import assistantLib.assistantModules.glyphsets.groupBaseGlyphs
+import assistantLib.assistantModules.glyphsets.glyphSet
+import assistantLib.assistantModules.glyphsets.glyphData
+import assistantLib.assistantModules.glyphsets.MS_WGL4_segoe
+import assistantLib.assistantModules.spacingKerning.kerningManager
 
 #    To implement
 #
@@ -49,63 +49,63 @@ import assistantLib.assistantParts.spacingKerning.kerningManager
 #    Anchors part --> Also does diacritics positioning and checking on floating positions
 #    Copy part --> Copy from source in case empty glyph
 
-importlib.reload(assistantLib.assistantParts.spacingKerning.kerningManager)
+importlib.reload(assistantLib.assistantModules.spacingKerning.kerningManager)
 
 importlib.reload(assistantLib.baseAssistant)
 from assistantLib.baseAssistant import Assistant, AssistantController
 
 # Auto generator for GD glyphset
-importlib.reload(assistantLib.assistantParts.data)
-from assistantLib.assistantParts.data import MasterData
+importlib.reload(assistantLib.assistantModules.data)
+from assistantLib.assistantModules.data import MasterData
 
-importlib.reload(assistantLib.assistantParts.glyphsets.anchorData)
-importlib.reload(assistantLib.assistantParts.glyphsets.groupBaseGlyphs)
-importlib.reload(assistantLib.assistantParts.glyphsets.glyphSet)
-importlib.reload(assistantLib.assistantParts.glyphsets.MS_WGL4_segoe)
-importlib.reload(assistantLib.assistantParts.glyphsets.glyphData)
+importlib.reload(assistantLib.assistantModules.glyphsets.anchorData)
+importlib.reload(assistantLib.assistantModules.glyphsets.groupBaseGlyphs)
+importlib.reload(assistantLib.assistantModules.glyphsets.glyphSet)
+importlib.reload(assistantLib.assistantModules.glyphsets.MS_WGL4_segoe)
+importlib.reload(assistantLib.assistantModules.glyphsets.glyphData)
 
-from assistantLib.assistantParts.glyphsets.MS_WGL4_segoe import MS_GlyphSet
+from assistantLib.assistantModules.glyphsets.MS_WGL4_segoe import MS_GlyphSet
 
 # Add to overlay part: [B] and [Q] for curve conversion, and smoothing conversion to circle
 # Add [x] Regular to show md.m0 on right side instead
-importlib.reload(assistantLib.assistantParts.builder)
-from assistantLib.assistantParts.builder import AssistantPartBuilder
+importlib.reload(assistantLib.assistantModules.builder)
+from assistantLib.assistantModules.builder import AssistantModuleBuilder
 
-importlib.reload(assistantLib.assistantParts.overlay)
-from assistantLib.assistantParts.overlay import AssistantPartOverlay
+importlib.reload(assistantLib.assistantModules.overlay)
+from assistantLib.assistantModules.overlay import AssistantModuleOverlay
 
-importlib.reload(assistantLib.assistantParts.italicize)
-from assistantLib.assistantParts.italicize import AssistantPartItalicize
+importlib.reload(assistantLib.assistantModules.italicize)
+from assistantLib.assistantModules.italicize import AssistantModuleItalicize
 
-importlib.reload(assistantLib.assistantParts.curves)
-from assistantLib.assistantParts.curves import AssistantPartCurves
+importlib.reload(assistantLib.assistantModules.curves)
+from assistantLib.assistantModules.curves import AssistantModuleCurves
 
-importlib.reload(assistantLib.assistantParts.contours)
-from assistantLib.assistantParts.contours import AssistantPartContours
+importlib.reload(assistantLib.assistantModules.contours)
+from assistantLib.assistantModules.contours import AssistantModuleContours
 
-importlib.reload(assistantLib.assistantParts.components)
-from assistantLib.assistantParts.components import AssistantPartComponents
+importlib.reload(assistantLib.assistantModules.components)
+from assistantLib.assistantModules.components import AssistantModuleComponents
 
-importlib.reload(assistantLib.assistantParts.dimensions)
-from assistantLib.assistantParts.dimensions import AssistantPartDimensions
+importlib.reload(assistantLib.assistantModules.dimensions)
+from assistantLib.assistantModules.dimensions import AssistantModuleDimensions
 
-importlib.reload(assistantLib.assistantParts.interpolate)
-from assistantLib.assistantParts.interpolate import AssistantPartInterpolate
+importlib.reload(assistantLib.assistantModules.interpolate)
+from assistantLib.assistantModules.interpolate import AssistantModuleInterpolate
 
-importlib.reload(assistantLib.assistantParts.familyOverview)
-from assistantLib.assistantParts.familyOverview import AssistantPartFamilyOverview
+importlib.reload(assistantLib.assistantModules.familyOverview)
+from assistantLib.assistantModules.familyOverview import AssistantModuleFamilyOverview
 
-importlib.reload(assistantLib.assistantParts.anchors)
-from assistantLib.assistantParts.anchors import AssistantPartAnchors
+importlib.reload(assistantLib.assistantModules.anchors)
+from assistantLib.assistantModules.anchors import AssistantModuleAnchors
 
-importlib.reload(assistantLib.assistantParts.groups)
-from assistantLib.assistantParts.groups import AssistantPartGroups
+importlib.reload(assistantLib.assistantModules.groups)
+from assistantLib.assistantModules.groups import AssistantModuleGroups
 
-importlib.reload(assistantLib.assistantParts.spacer)
-from assistantLib.assistantParts.spacer import AssistantPartSpacer
+importlib.reload(assistantLib.assistantModules.spacer)
+from assistantLib.assistantModules.spacer import AssistantModuleSpacer
 
-importlib.reload(assistantLib.assistantParts.guidelines)
-from assistantLib.assistantParts.guidelines import AssistantPartGuidelines
+importlib.reload(assistantLib.assistantModules.guidelines)
+from assistantLib.assistantModules.guidelines import AssistantModuleGuidelines
 
 class MS_MasterData(MasterData):
     DEFAULT_TAB_WIDTH = 2222
@@ -152,19 +152,19 @@ CAP_DIACRITICS_TEXT_TOP = 1570 # Bottom of captical diacritics guideline
 CAP_DIACRITICS_SMALL_TOP = 1570 # Bottom of captical diacritics guideline
       
 class SegoeUIItalicAssistant(Assistant, 
-        AssistantPartOverlay, 
-        AssistantPartFamilyOverview, 
-        AssistantPartItalicize,
-        AssistantPartInterpolate,
-        AssistantPartCurves,
-        AssistantPartContours,
-        AssistantPartComponents,
-        AssistantPartDimensions,
-        AssistantPartGroups,
-        AssistantPartSpacer,
-        AssistantPartAnchors,
-        AssistantPartGuidelines,
-        AssistantPartBuilder,
+        AssistantModuleOverlay, 
+        AssistantModuleFamilyOverview, 
+        AssistantModuleItalicize,
+        AssistantModuleInterpolate,
+        AssistantModuleCurves,
+        AssistantModuleContours,
+        AssistantModuleComponents,
+        AssistantModuleDimensions,
+        AssistantModuleGroups,
+        AssistantModuleSpacer,
+        AssistantModuleAnchors,
+        AssistantModuleGuidelines,
+        AssistantModuleBuilder,
         ):
             
     PROJECT_PATH = __file__
@@ -722,19 +722,19 @@ class SegoeUIItalicAssistant(Assistant,
     ]         
 class SegoeUIItalicAssistantController(
         AssistantController, 
-        AssistantPartOverlay, 
-        AssistantPartFamilyOverview, 
-        AssistantPartGroups,
-        AssistantPartSpacer,
-        AssistantPartAnchors,
-        AssistantPartItalicize,
-        AssistantPartInterpolate,
-        AssistantPartCurves,
-        AssistantPartContours,
-        AssistantPartComponents,
-        AssistantPartDimensions,
-        AssistantPartGuidelines,
-        AssistantPartBuilder,
+        AssistantModuleOverlay, 
+        AssistantModuleFamilyOverview, 
+        AssistantModuleGroups,
+        AssistantModuleSpacer,
+        AssistantModuleAnchors,
+        AssistantModuleItalicize,
+        AssistantModuleInterpolate,
+        AssistantModuleCurves,
+        AssistantModuleContours,
+        AssistantModuleComponents,
+        AssistantModuleDimensions,
+        AssistantModuleGuidelines,
+        AssistantModuleBuilder,
         ):
 
     # See other class variables to be redefined from BaseAssistantController

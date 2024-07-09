@@ -20,9 +20,9 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 
-class AssistantPartFamilyOverview(BaseAssistantPart):
+class AssistantModuleFamilyOverview(BaseAssistantModule):
 
     #    O V E R L A Y
 

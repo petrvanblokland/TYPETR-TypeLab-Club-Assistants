@@ -16,9 +16,9 @@ for path in PATHS:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 
-class AssistantPartOverlay(BaseAssistantPart):
+class AssistantModuleOverlay(BaseAssistantModule):
 
     #    O V E R L A Y
 

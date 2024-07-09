@@ -20,9 +20,9 @@ for path in PATHS:
 from fontTools.misc.transform import Transform
 from mojo.roboFont import OpenWindow, OpenFont, AllFonts, RGlyph, RPoint
 
-from assistantLib.assistantParts.baseAssistantPart import BaseAssistantPart
+from assistantLib.assistantModules.baseAssistantModule import BaseAssistantModule
 
-class AssistantPartItalicize(BaseAssistantPart):
+class AssistantModuleItalicize(BaseAssistantModule):
     """The Italicize assistant part italicizes the current glyph in RoboFont."""
 
     def initMerzItalicize(self, container):
