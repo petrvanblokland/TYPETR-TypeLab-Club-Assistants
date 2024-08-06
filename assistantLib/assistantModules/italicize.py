@@ -11,7 +11,7 @@ from math import *
 from vanilla import *
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

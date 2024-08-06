@@ -61,7 +61,7 @@ from assistantLib.toolbox.glyphAnalyzer import GlyphAnalyzer
 from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)
@@ -150,6 +150,8 @@ class BaseAssistant:
     BUILD_UI_METHODS = []
 
     ITALIC_ANGLE = 0
+
+    MAKE_MISSING_MASTER_DATA_GLYPH_DATA = False # If the assistant finds a master with unknown MasterData, then create one.
 
     # Point types
     POINTTYPE_BEZIER = 'curve'
@@ -253,7 +255,7 @@ class BaseAssistant:
     def getMasterData(self, f):
         """Answer the MasterData instance for this font, containing meta-information about the entire font."""
         ufoName = self.path2UfoName(f.path)
-        mds = self.controller().MASTER_DATA
+        mds = self.getController().MASTER_DATA
         if mds is None: # No MASTER_DATA defined by inheriting class
             if self.MAKE_MISSING_MASTER_DATA_GLYPH_DATA: 
                 # Try to build MasterData dictionary from UFOs in self.UFO_PATH    
@@ -451,6 +453,14 @@ class BaseAssistant:
                      return g.font[gd.base], component.transformation[-2:]
         return None, (0, 0)
 
+    def getDefaultGlyphLayer(self, g):
+        """Answer the default layer of the glyph, either the foreground or public.default layer.
+        As there deem to be difference for older UFO, we'll test on which one is not empty."""
+        dg = g.getLayer('foreground')
+        if dg.components or dg.contours:
+            return dg
+        return g.getLayer('public.default')
+
     def scaleGlyph(self, g, sx, sy=None):
         if sy is None:
             sy = sx
@@ -643,7 +653,12 @@ class Assistant(BaseAssistant, Subscriber):
     #self.glyphEditorDidKeyDown(info):
 
     
-    #def glyphEditorGlyphDidChange(self, info) # Better not use this one, as it also is triggered on lib changes.
+    def glyphEditorGlyphDidChange(self, info):
+        """This is a generic glyph.changed() event call. Better not use this one, as it also is triggered on lib changes.
+        Best is to only use it in case a self.updateMerz(info) is required, while nothing really changed to the glyph."""
+        print('ZZZ glyphEditorGlyphDidChange', info['glyph'].name)
+        self.updateMerz(info)
+
     #   The editor selected another glyph. Update the visible Merz elements for the new glyph."""
     
     #   G L Y P H  E V E N T S
@@ -979,7 +994,11 @@ class AssistantController(BaseAssistant, WindowController):
     def updateEditor(self, sender):
         g = self.getCurrentGlyph()
         if g is not None:
+            # Hack to force update event. How to do this otherwise?
+            g.width = g.width + 1
             g.changed()
+            g.width = g.width - 1
+            print('$$$ updateEditpr')
                   
     # Handle subscriptions to the EditorWindow events
     

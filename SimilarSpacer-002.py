@@ -42,7 +42,7 @@ if 0:
 from mojo.UI import OpenGlyphWindow
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/', '../TYPETR-Segoe-UI/')
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/', '../TYPETR-Segoe-UI/')
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

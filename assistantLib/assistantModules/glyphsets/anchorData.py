@@ -7,7 +7,10 @@
 #   glyphSet_anchors.py
 #
 #   These are standard sets of glyphs + their most common anchor names.
-
+#
+#   TODO: Convert the large anchorName-->[glyphname, ...] into the glyphsets.
+#   Now there is redundant information here and in the glyphset definitions, which is confusing.
+#
 class AnchorData:
 
     # Add needed anchors

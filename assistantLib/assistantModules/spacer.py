@@ -22,7 +22,7 @@ from mojo.UI import OpenGlyphWindow
 from mojo.roboFont import CurrentFont
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

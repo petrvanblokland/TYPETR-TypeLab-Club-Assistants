@@ -31,7 +31,7 @@ except ImportError: # In case not running inside RoboFont
 # It implices that the TYPETR-Assistants repository should live in the same directory as the project repositories.
 # This way no installation of libraries is required. Easier to update for new versions.
 #
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

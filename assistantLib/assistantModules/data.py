@@ -15,42 +15,57 @@
 #   Stacking diacritics can have both, to allow other diacritics floating on top.
 #
 import importlib
+import os, sys
+import codecs
+
+if __name__ == '__main__': # Used for doc tests to find assistantLib
+    PATH = '/'.join(__file__.split('/')[:-3]) # Relative path to this respository that holds AssistantLib
+    if not PATH in sys.path:
+        sys.path.append(PATH)
 
 from assistantLib.assistantModules.glyphsets.glyphData import * 
-from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet
+from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet, LATIN_S_SET_NAME
 import assistantLib.assistantModules.glyphsets.anchorData
 importlib.reload(assistantLib.assistantModules.glyphsets.anchorData)
 from assistantLib.assistantModules.glyphsets.anchorData import AD
 
 class MasterData:
     """Storing additional data about masters, without storing the actual RFont instance. 
-    The font can be retrieves by baseAssistant.getMaster(self.path)
+    The font can be retrieved by baseAssistant.getMaster(self.path)
 
     >>> # Doctesting is done via more global docTestAssistants.py
-
+    >>> name = 'MyFont.ufo'
+    >>> ufoPath = 'ufo/' + name
+    >>> md = MasterData(name, ufoPath)
+    >>> md.name, md.ufoPath
+    ('MyFont.ufo', 'ufo/MyFont.ufo')
+    >>> md.glyphSet['A']
+    <GlyphData A l2r=A>
+    >>> md.ascenderAnchorOffsetY
+    -120
     """
     # Master data default values
-    UNITS_PER_EM = 1000
+    UNITS_PER_EM = 1000 # Default font.info.unitPerEm, if not defined otherwise
     COPYRIGHT = ""
     TRADEMARK = ""
     LOWEST_PPEM = 5
 
     BASELINE = 0
     TAB_WIDTH = 650
-    BASE_OVERSHOOT = 12
-    STEM_OVERSHOOT = 0 # Used for small  dovershoot if single stems, e.g. in rounded terminals such as Upgrade Neon
-    ASCENDER = 750
-    DESCENDER = -250
+    BASE_OVERSHOOT = 12 # Default overshoot for /o, etc. and for all overshoot if not defined separately.
+    STEM_OVERSHOOT = 0 # Used for small overshoot of single stems, e.g. in rounded terminals such as Upgrade Neon
+    ASCENDER = 750 # Default ascender in font.info, if not defined otherwise.
+    DESCENDER = -250 # Default descender in font.info, if not defined otherwise.
     XHEIGHT = 500
     CAPHEIGHT = 750
     DEFAULT_TAB_WIDTH = 650
     
-    VERSION_MAJOR = 1
+    VERSION_MAJOR = 1 # Default version numnber. Should be altered as MasterData creation parameter.
     VERSION_MINOR = 0
 
-    UFO_PATH = 'ufo/'
+    UFO_PATH = 'ufo/' # Default relative directory for UFO files in a project. Can be altered in the MasterData creation.
 
-    def __init__(self, name=None, ufoPath=None, 
+    def __init__(self, name, ufoPath, 
             srcUFOPath=None, someUFOPath=None, orgUFOPath=None, 
             groupSrcUFOPath=None, # Optioncal copy groups from here, otherwise use orgUFOPath
             kerningSrcUFOPath=None, # Optional copy kerning from here, otherwise use orgUFOPath
@@ -64,8 +79,10 @@ class MasterData:
             sm1=None, sm2=None, # Scalerpolate masters for condensed and extended making
             osm1=None, osm2=None, # Previous and next master on the same optical size level
             tripletData1=None, tripletData2=None, featurePath=None, 
-            # GlyphSet instance, describing the glyph set and GlyphData characteristics. This attribute must be defined
+            # GlyphSet instance, describing the glyph set and GlyphData characteristics. 
+            # This attribute must be defined, or else the Latin_S (Small) will be used.
             glyphSet=None, 
+            glyphSetName=None,
             # Vertical metrics
             baseline=0, stemOvershoot=STEM_OVERSHOOT, baseOvershoot=None, capOvershoot=None, scOvershoot=None, supsOvershoot=None,
             ascender=None, descender=None,
@@ -158,7 +175,9 @@ class MasterData:
         self.tabWidth = tabWidth
 
         # Glyphs
-        assert glyphSet is not None, (f'### Glyphset {glyphSet} should be defined')
+        if glyphSet is None:
+            # Make a default GlyphSet instance, if not defined.
+            glyphSet = GlyphSet()
         self.glyphSet = glyphSet
         
         # Vertical metrics. Do some guessing for missing values. 
@@ -177,7 +196,7 @@ class MasterData:
             scOvershoot = baseOvershoot
         self.scOvershoot = scOvershoot
         if supsOvershoot is None: # Overshoot value for sups, numr, sinf and dnom
-            supsOvershoot = baseOvershoot
+            supsOvershoot = int(round(baseOvershoot * 0.75)) # Default scale from base overshoot
         self.supsOvershoot = supsOvershoot
         
         self.cat2Overshoot = { # Category --> overshoot
@@ -312,6 +331,66 @@ class MasterData:
         #eulaURL=EULA_URL, eulaDescription=EULA_DESCRIPTION,
         #underlinePosition=None, underlineThickness=UNDERLINE_THICKNESS
 
+    @classmethod
+    def fromUfoPath(cls, ufoPath):
+        """Try to create all values from the existing UFO font"""
+        from fontParts.fontshell.font import RFont
+        from assistantLib.toolbox.glyphAnalyzer import GlyphAnalyzer
+
+        name = ufoPath.split('/')[-1].replace('.ufo', '')
+        assert os.path.exists(ufoPath) # Make sure the UFO exists
+
+        # Not trying to match the glyphset of ufoPath with the ones that are defined.
+        # It's up to the designer/developer of the masterData.py to decide which one it should be.
+        glyphSetName = LATIN_S_SET_NAME
+
+        f = RFont(ufoPath) # Open to UFO to harvest and guess parameters
+        
+        # We cannot use self.getOverhoot(glyphName) here, since we're in classMethod mode.
+        # And it would be a circle reference, we need to extract the values from the real glyphs
+        baseOvershoot = capOvershoot = scOvershoot = supsOvershoot = None
+        if 'O' in f: # Use for guessing capital overshoots
+            ga = GlyphAnalyzer(f['O'])
+            capOvershoot = ga.overshoot
+        if 'o' in f: # Use for guessing capital overshoots
+            ga = GlyphAnalyzer(f['o'])
+            baseOvershoot = ga.overshoot
+        if 'O.sc' in f: # Use for guessing capital overshoots
+            ga = GlyphAnalyzer(f['O.sc'])
+            scOvershoot = ga.overshoot
+
+        md = cls(name, ufoPath=ufoPath, 
+            romanItalicUFOPath=cls.guessRomanItalicPath(ufoPath), # Guess the roman <--> italic compantion master
+            # Glyphs
+            glyphSetName=glyphSetName,
+            # Angles
+            italicAngle=f.info.italicAngle,
+            # Vertical metrics
+            ascender=f.info.ascender,
+            descender=f.info.descender,
+            xHeight=f.info.xHeight,
+            capHeight=f.info.capHeight,
+            baseOvershoot=baseOvershoot,
+            capOvershoot=capOvershoot,
+            scOvershoot=scOvershoot,
+            # supsOvershoot
+
+            # Info
+            copyright=f.info.copyright or f'Copyright for {f.info.familyName}',
+        ) 
+        return md
+
+    @classmethod
+    def guessRomanItalicPath(cls, ufoPath):
+        ufoDirPath = '/'.join(ufoPath.split('/')[:-1]) + '/'
+        fileName = ufoPath.split('/')[-1]
+        if 'Italic' in fileName:
+            return ufoDirPath + fileName.replace('_Italic', '')
+        return ufoDirPath + fileName.replace('.ufo', '_Italic.ufo')
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__} name={self.name}>'
+
     def isNumber(self, v):
         return isinstance(v, (int, float))
 
@@ -395,9 +474,174 @@ class MasterData:
         """Answer the standard overshoot of anchors (to make sure theu don't overlap with outline points)"""
         return 16 # for now
 
+    def _get_localUfoPath(self):
+        """Answer the self.ufoPath as local ufo/MyFont.ufo path."""
+        return '/'.join(self.ufoPath.split('/')[-2:])
+    localUfoPath = property(_get_localUfoPath)
+
+    def asSource(self):
+        """Answer the source of this instance that 100% regenerates. This is used by the MasterDataManager
+        to write the source for local masterData.py"""
+        s = ['MD(']
+        s.append(f"""name='{self.name}',""")
+        s.append(f"""ufoPath='{self.localUfoPath}',""")
+        if self.ttfPath is not None:
+            s.append(f"""ttfPath='{self.ttfPath}',""")
+        s.append('#\tAngles')
+        s.append(f"""italicAngle={self.italicAngle},""")
+        s.append('#\tVertical metrics')
+        s.append(f"""ascender={self.ascender},""")
+        s.append(f"""capHeight={self.capHeight},""")
+        s.append(f"""xHeight={self.xHeight},""")
+        s.append(f"""descender={self.descender},""")
+        s.append(f"""baseOvershoot={self.baseOvershoot},""")
+        s.append(f"""capOvershoot={self.capOvershoot},""")
+        s.append(f"""scOvershoot={self.scOvershoot},""")
+        s.append(f"""supsOvershoot={self.supsOvershoot},""")
+        s.append('#\tInfo')
+        if self.copyright is not None:
+            s.append(f"""copyright='{self.copyright}',""")
+        """
+        self.platformID = platformID
+        self.platEncID = platEncID
+        self.langID = platEncID, 
+        self.unitsPerEm = unitsPerEm
+        self.copyright = copyright
+        self.uniqueID = uniqueID 
+        self.trademark = trademark
+        self.lowestRecPPEM = lowestRecPPEM
+
+        self.fullName = fullName
+        """
+        return '\n\t\t'.join(s) + '\n\t),\n\n'
+
 MD = MasterData
 
+class MasterDataManager:
+    """The MasterDataManager handles the connection betweeh the MasterData instances and the directory 
+    that contains UFO files. It is assumed that a project has a local masterData.py file that describes 
+    all master data that does not fit in font.info. If the file does not exist or if it is empty, 
+    the MasterDataInstance tries to create it, with best guesses of values that it derives from the UFO files. 
+    Note that this only happens if the file does not exist. Otherwise it just reads the dictionary.
+    This way a new project can start from a bunch of existing UFO files, without the need to initialize 
+    the masterData.py manually. After that, the designer will alter/add values manually.
+    However, there is also a self.save(path) method available, in case the user project wants to save 
+    a source for the current masterData. 
 
+    >>> # Construct the absolute path where theh type-try UDOs are located.
+    >>> ufoPath = '/'.join(__file__.split('/')[:-3]) + '/ufo-try/' 
+    >>> masterData = {} # We start with uninitialized master data
+    >>> mdm = MasterDataManager(masterData, ufoPath=ufoPath, glyphSet=None) # Examine the directory content
+    >>> len(mdm.keys()) # It generated a MasterData instance for each of the demo UFO files.
+    10
+
+    >>> # ---------- Select the masterData from a specific UFO
+    >>> ufoName = 'Upgrade_Try-Regular' # Let's use this one for testing
+    >>> md = mdm[ufoName]
+    >>> md
+    <MasterData name=Upgrade_Try-Regular>
+    >>> md.romanItalicUFOPath.split('/')[-1] # Italic companion of this italic
+    'Upgrade_Try-Regular_Italic.ufo'
+    >>> md.italicAngle, md.isItalic 
+    (0, False)
+    >>> md.ascender, md.capHeight, md.xHeight, md.descender
+    (748, 658, 466, -252)
+    >>> md.baseOvershoot, md.capOvershoot
+    (11, 15)
+
+    >>> # ---------- Select the masterData from the companion italic
+    >>> mdi = mdm.findPath2MasterData(md.romanItalicUFOPath)
+    >>> mdi
+    <MasterData name=Upgrade_Try-Regular_Italic>
+    >>> mdi.romanItalicUFOPath.split('/')[-1] # Roman companion of this italic
+    'Upgrade_Try-Regular.ufo'
+    >>> mdi.italicAngle, mdi.isItalic
+    (-8, True)
+    >>> mdi.ascender, mdi.capHeight, mdi.xHeight, mdi.descender
+    (748, 658, 466, -252)
+    >>> mdi.baseOvershoot, mdi.capOvershoot
+    (11, 15)
+
+    >>> # ---------- Let's test another roman with different proportions
+    >>> ufoName = 'Upgrade_Try-UltraBlack' # Let's use this one for testing
+    >>> mdb = mdm[ufoName]
+    >>> mdb
+    <MasterData name=Upgrade_Try-UltraBlack>
+    >>> mdb.baseOvershoot, mdb.capOvershoot # UltraBlack had more overshoot than Regular
+    (24, 18)
+
+    >>> mdm.save()
+    """
+    def __init__(self, masterData, ufoPath=None, ufoPaths=None, glyphSet=None):
+        # If masterData is None or empty, then try to create it by filling guessed data
+        assert ufoPath is not None or ufoPaths is not None
+        self.path = None # Will be initialized as parent of ufoPath
+        if masterData is None or not len(masterData):
+            masterData = {}
+        self.masterData = masterData
+        if ufoPaths is None: # Get all UFO files from ufoPath instead
+            ufoPaths = self.path2UfoPaths(ufoPath)
+            self.ufoPath = '/'.join(ufoPath.split('/')[:-2]) + '/' # Assumes the path is ufo/
+        for ufoPath in ufoPaths:
+            md = self.findPath2MasterData(ufoPath) # Find the masterData that fits this ufoPath, if it exists.
+            if md is None: # If it does not exist, try to create a MasterData for this ufo
+                md = MasterData.fromUfoPath(ufoPath)
+                self.masterData[md.name] = md
+            if self.ufoPath is None: # Use the first UFO that we found as reference.
+                self.ufoPath = '/'.join(ufoPath.split('/')[:-3]) + '/' # Assumes the UFO to be stored in ufo/MyFont.ufo
+
+    @classmethod
+    def path2UfoPaths(cls, path):
+        """Answer a list of all UFO files in the path directory."""
+        ufoPaths = []
+        for fileName in os.listdir(path):
+            if fileName.startswith('.'):
+                continue
+            if fileName.endswith('.ufo'):
+                ufoPaths.append(path + fileName)
+        return ufoPaths
+
+    def findPath2MasterData(self, ufoPath):
+        for name, md in self.masterData.items():
+            if ufoPath == md.ufoPath:
+                return md
+        return None
+
+    def keys(self):
+        return self.masterData.keys()
+
+    def __getitem__(self, key):
+        return self.masterData[key]
+
+    def __setitem__(self, key, md):
+        assert isinstance(md, MasterData)
+        self.masterData[key] = md
+
+    def save(self, path=None):
+        """Save the Python source of the current dict of MasterData"""
+        s = """# -*- coding: UTF-8 -*-
+# ------------------------------------------------------------------------------
+#     Generated by TYPETR-Assistant MasterDataManager
+# ..............................................................................
+#
+#   masterData.py
+#
+from assistantLib.assistantModules.data import MasterData as MD
+
+MASTERS_DATA = {
+"""
+    
+        for name, md in sorted(self.masterData.items()):
+            s += f"""\t'{name}': {md.asSource()}"""
+
+        s += '}\n\n'
+
+        if path is None:
+            path = self.ufoPath
+        path += 'masterData.py'
+        f = codecs.open(path, 'w', encoding='utf-8') # Open file, for unicode/UTF-8
+        f.write(s) 
+        f.close()
 
 if __name__ == '__main__':
     import doctest

@@ -10,7 +10,7 @@ import sys
 from vanilla import *
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)
@@ -24,9 +24,9 @@ class AssistantModuleOverlay(BaseAssistantModule):
 
     MAX_POINT_MARKERS = 150 # Should be enough to show most glyphs
     
-    OVERLAY_FILL_LEFT_COLOR = 0, 0, 0, 0.6
-    OVERLAY_FILL_COLOR = 0, 0, 0, 0.6
-    OVERLAY_FILL_RIGHT_COLOR = 0, 0, 0, 0.6
+    OVERLAY_FILL_COLOR = 0, 0, 0, 0.95
+    OVERLAY_FILL_LEFT_COLOR = OVERLAY_FILL_COLOR # Can be altered by inheriting classes
+    OVERLAY_FILL_RIGHT_COLOR = OVERLAY_FILL_COLOR
 
     OVERLAY_STROKE_POINTMARKERS_COLOR = 0, 0.5, 0.5, 1
 
@@ -116,34 +116,39 @@ class AssistantModuleOverlay(BaseAssistantModule):
         )
 
     def updateMerzOverlay(self, info):
+
         c = self.getController()
         if c is None:
+            print('### updateMerzOverlay: No controller defined')
             return
         g = info['glyph']
         if g is None:
+            print('### updateMerzOverlay: No current glyph§ ')
             return
         f = g.font
         md = self.getMasterData(f)
         km = self.getKerningManager(f)
 
-        gLeft = gRight = fg = g.getLayer('foreground')
+        gLeft = gRight = fg = self.getDefaultGlyphLayer(g) # Get either foreground or public.default layer, the one with content.
         # Show filled preview of the glyph on left/right side
         glyphPathLeft = glyphPathRight = glyphPath = fg.getRepresentation("merz.CGPath")
         leftName = c.w.previewGlyphLeftName.get()
         if leftName and leftName in f:
-            gLeft = f[leftName].getLayer('foreground')
+            gLeft = self.getDefaultGlyphLayer(f[leftName]) # Get either foreground or oublic,default layer, the one with content
             k, groupK, kerningType = km.getKerning(gLeft.name, g.name) # Supply glyph names here, not the glyphs
             x = min(-gLeft.width, gLeft.angledLeftMargin-500) - k # Subtract: needs to move right
             glyphPathLeft = gLeft.getRepresentation("merz.CGPath") 
             self.previewGlyphLeft.setPath(glyphPathLeft)
             self.previewGlyphLeft.setPosition((x, 0)) # Make sure not to overlap on zero-width
+            self.previewGlyphLeft.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/100))
             self.previewGlyphLeft.setVisible(True)
 
         elif c.w.previewGlyphLeft.get():
             k, groupK, kerningType = km.getKerning(g.name, g.name)
             x = min(-g.width, g.angledLeftMargin-500) - k # Subtract: needs to move right
-            self.previewGlyphLeft.setPath(glyphPath)
+            self.previewGlyphLeft.setPath(glyphPathLeft)
             self.previewGlyphLeft.setPosition((x, 0)) # Make sure not to overlap on zero-width
+            self.previewGlyphLeft.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/100))
             self.previewGlyphLeft.setVisible(True)
 
         else:
@@ -151,19 +156,21 @@ class AssistantModuleOverlay(BaseAssistantModule):
 
         rightName = c.w.previewGlyphRightName.get()
         if rightName and rightName in f:
-            gRight = f[rightName].getLayer('foreground')
+            gRight =  self.getDefaultGlyphLayer(f[rightName]) # Either foreground or public.default layer
             k, groupK, kerningType = km.getKerning(g.name, gRight.name)
             x = max(g.width, -g.angledRightMargin+500) + k # Add, with negative kerning moves to the left
             glyphPathRight = gRight.getRepresentation("merz.CGPath") 
             self.previewGlyphRight.setPath(glyphPathRight)
             self.previewGlyphRight.setPosition((x, 0)) # Make sure not to overlap on zero-width
+            self.previewGlyphRight.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/100))
             self.previewGlyphRight.setVisible(True)
         
         elif c.w.previewGlyphRight.get():
             k, groupK, kerningType = km.getKerning(g.name, g.name)
             x = max(g.width, -g.angledRightMargin+500) + k # Add, with negative kerning moves to the left
-            self.previewGlyphRight.setPath(glyphPath)
+            self.previewGlyphRight.setPath(glyphPathRight)
             self.previewGlyphRight.setPosition((x, 0)) # Make sure not to overlap on zero-width
+            self.previewGlyphRight.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/100))
             self.previewGlyphRight.setVisible(True)
         
         else:
@@ -175,7 +182,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
         
         pIndex = 0
         if overlayName and overlayName in f:
-            gOverlay = f[overlayName].getLayer('foreground')
+            gOverlay = self.getDefaultGlyphLayer(f[overlayName])
             glyphPathOverlay = gOverlay.getRepresentation("merz.CGPath") 
             self.previewGlyphOverlay.setPath(glyphPathOverlay)
  
@@ -184,7 +191,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
             self.previewGlyphOverlay.setVisible(True)
             
             if c.w.previewGlyphOverlay.get():
-                self.previewGlyphOverlay.setFillColor(self.OVERLAY_FILL_COLOR)
+                self.previewGlyphOverlay.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/100))
             else:
                 self.previewGlyphOverlay.setFillColor(None)
             
@@ -204,7 +211,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
         for n in range(pIndex, len(self.previewPointMarkers)):
             self.previewPointMarkers[n].setVisible(False)
 
-        # If there is not an path md defined for each type of overlay, then disable their checkboxes.
+        # If there is not a path md defined for each type of overlay, then disable their checkboxes.
         drawn = False
         if md.srcUFOPath is not None and c.w.srcUFOPathOverlay.get():
             of = self.getFont(md.srcUFOPath)
@@ -213,6 +220,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
                 glyphPath = og.getRepresentation("merz.CGPath") 
                 self.srcUFOPathOverlay.setPath(glyphPath)
                 self.srcUFOPathOverlay.setPosition((0, 0)) 
+                self.srcUFOPathOverlay.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/200))
                 self.srcUFOPathOverlay.setVisible(True)
                 drawn = True
         if not drawn:
@@ -226,6 +234,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
                 glyphPath = og.getRepresentation("merz.CGPath") 
                 self.someUFOPathOverlay.setPath(glyphPath)
                 self.someUFOPathOverlay.setPosition((0, 0)) 
+                self.someUFOPathOverlay.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/200))
                 self.someUFOPathOverlay.setVisible(True)
                 drawn = True
         if not drawn:
@@ -241,6 +250,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
                 glyphPath = og.getRepresentation("merz.CGPath") 
                 self.orgUFOPathOverlay.setPath(glyphPath)
                 self.orgUFOPathOverlay.setPosition((0, 0)) 
+                self.orgUFOPathOverlay.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/200))
                 self.orgUFOPathOverlay.setVisible(True)
                 drawn = True
         if not drawn:
@@ -254,6 +264,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
                 glyphPath = og.getRepresentation("merz.CGPath") 
                 self.romanItalicUFOPathOverlay.setPath(glyphPath)
                 self.romanItalicUFOPathOverlay.setPosition((0, 0)) 
+                self.romanItalicUFOPathOverlay.setFillColor((0, 0, 0, c.w.overlayColorSlider.get()/200))
                 self.romanItalicUFOPathOverlay.setVisible(True)
                 drawn = True
         if not drawn:
@@ -393,6 +404,8 @@ class AssistantModuleOverlay(BaseAssistantModule):
         c.w.overlayAlignment = RadioGroup((C1, y, CW, L), ('L', 'C', 'R'), isVertical=False, sizeStyle='small', callback=self.updateOverlayPositionCallback)
         c.w.overlayAlignment.set(0)
         y += L
+        c.w.overlayColorSlider = Slider((C0, y, CW, L), minValue=20, maxValue=100, value=50,
+            sizeStyle='small', continuous=True, callback=self.updateOverlayColorSlider)
         c.w.overlayPositionSlider = Slider((C1, y, CW, L), minValue=0, maxValue=self.MAX_OVERLAY_SLIDER, value=0, 
             sizeStyle='small', continuous=True, callback=self.updateOverlayPositionSliderCallback)
         y += L
@@ -409,6 +422,11 @@ class AssistantModuleOverlay(BaseAssistantModule):
         c.w.overlayEndLine2 = HorizontalLine((self.M, y, -self.M, 1))
         y += L/5
         return y
+
+    def updateOverlayColorSlider(self, sender):
+        """The one of the left/middle/right color sliders was changed, update the color of the overlays accordingly."""
+        print('### updateOverlayColorSlider')
+        self.updateEditor(sender)
 
     def updateOverlayPositionCallback(self, sender):
         position = self.w.overlayAlignment.get()

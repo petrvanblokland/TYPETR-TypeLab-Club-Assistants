@@ -15,6 +15,13 @@
 #
 # Note that names cannot start with an underscore, or else the cannot be imported by other sources.
 #
+
+if __name__ == '__main__': # Used for doc tests to find assistantLib
+    import os, sys
+    PATH = '/'.join(__file__.split('/')[:-4]) # Relative path to this respository that holds AssistantLib
+    if not PATH in sys.path:
+        sys.path.append(PATH)
+
 from assistantLib.assistantModules.glyphsets.anchorData import AD 
 
 class GlyphData:
@@ -22,16 +29,18 @@ class GlyphData:
 
     >>> gd = GlyphData(l2r='A', uni=65, c='A', name='A', srcName='A', hex='0041', comment='A Uppercase Alphabet, Latin', gid=35)
     >>> gd
-    <GlyphData A>
+    <GlyphData A l2r=A>
     >>> gd.uni
     65
-    >>> gd = GlyphData = GD(uni=193, name='Aacute', base='A', accents=['acutecmb'])
+    >>> gd = GlyphData = GD(uni=193, name='Aacute', base='A', accents=['acutecmb'], anchors=('top', 'bottom', 'ogonek'))
     >>> gd.c
     'Á'
     >>> gd.hex
     '00C1'
     >>> gd.components
     ['A', 'acutecmb']
+    >>> gd.anchors
+    ['bottom', 'ogonek', 'top']
     """    
     # Types of mods, parts of glyph names
     MOD_SUPERIOR = 'superior'
@@ -214,7 +223,18 @@ class GlyphData:
         self.width = width
 
     def __repr__(self):
-        return(f'<{self.__class__.__name__} {self.name}>')
+        s = f'<{self.__class__.__name__} {self.name}'
+        if self.l is not None:
+            s += f' l={self.l}'
+        elif self.r2l is not None:
+            s += f' r2l={self.rl2}'
+        if self.w is not None:
+            s += f' w={self.w}'
+        elif self.r is not None:
+            s += f' r={self.r}'
+        elif self.l2r is not None:
+            s += f' l2r={self.l2r}'
+        return(s + '>')
 
     def _get_isUpper(self):
         return not self.isLower
@@ -291,7 +311,7 @@ class GlyphData:
 
     def asSourceLine(self):
         """Answer the string of self as Python code that will reproduce self as instance."""
-        out = f"""       '{self.name}': GD(name='{self.name}'"""
+        out = f"""        '{self.name}': GD(name='{self.name}'"""
         if self.uni is not None:
             if self.name == '.null': # Special case
                 out += """, uni=0x%04X, hex='%04X'""" % (self.uni, self.uni)
@@ -362,29 +382,86 @@ class GlyphData:
         return out
 
     def _set_w(self, w):
+        """Set/get the self.w width as property.
+
+        >>> gd = GlyphData(name='A')
+        >>> gd.w is None
+        True
+        >>> gd.w = 1000
+        >>> gd.w
+        1000
+        """
         self._w = w
     def _get_w(self):
         return self._w
     w = property(_get_w, _set_w)
 
     def _get_fixedLeft(self):
+        """Get the boolean flag if the glyphData has a defined left margin.
+
+        >>> gd = GlyphData(name='A')
+        >>> gd.fixedLeft
+        False
+        >>> gd.r2l = 'A'
+        >>> gd.fixedLeft
+        True
+        """
         return bool(self.l or self.bl or self.r2l or self.br2l or self.r2bl or self.br2bl)
     fixedLeft = property(_get_fixedLeft)
     
     def _get_fixedRight(self):
-        return bool(self.r or self.mr or self.l2r or self.bl2r or self.l2br or self.bl2br or self.w)
+        """Get the boolean flag if the glyphData has a defined right margin.
+
+        >>> gd = GlyphData(name='A')
+        >>> gd.fixedRight
+        False
+        >>> gd.r = 40
+        >>> gd.fixedRight
+        True
+        """
+        return bool(self.r or self.br or self.l2r or self.bl2r or self.l2br or self.bl2br or self.w)
     fixedRight = property(_get_fixedRight)
     
     def _get_leftSpaceSource(self):
+        """Get the boolean flag if the glyphData has a defined right margin.
+
+        >>> gd = GlyphData(name='A')
+        >>> gd.leftSpaceSource is None
+        True
+        >>> gd.r2l = 'W'
+        >>> gd.leftSpaceSource
+        'W'
+        >>> gd.l = 'V' # Overwrites the gd.r2l in order
+        >>> gd.leftSpaceSource
+        'V'
+        """
         return self.l or self.bl or self.r2l or self.br2l or self.r2bl or self.br2bl or None
     leftSpaceSource = property(_get_leftSpaceSource)
     
     def _get_rightSpaceSource(self):
-        return self.r or self.mr or self.l2r or self.bl2r or self.l2br or self.bl2br or self.w
+        """Get the boolean flag if the glyphData has a defined right margin.
+
+        >>> gd = GlyphData(name='A')
+        >>> gd.rightSpaceSource is None
+        True
+        >>> gd.l2r = 'W'
+        >>> gd.rightSpaceSource
+        'W'
+        >>> gd.r = 'V' # Overwrites the gd.r2l in order
+        >>> gd.rightSpaceSource
+        'V'
+        """
+        return self.r or self.br or self.l2r or self.bl2r or self.l2br or self.bl2br or self.w
     rightSpaceSource = property(_get_rightSpaceSource)
     
     def _get_leftSpaceSourceLabel(self):
-        """Answer the string where this space gets from. Answer None if there is non source."""
+        """Answer the string where the left margin gets from. Answer None if there is no source.
+        This method is used for reporting about the glyph spacing in the EditorWindow, not at Python source.
+
+        >>> gd = GlyphData(name='A', l=40, l2r='A')
+        >>> gd.leftSpaceSourceLabel
+        'Left /40'
+        """
         if self.l is not None:
             return f'Left /{self.l}'
         if self.bl is not None:
@@ -403,7 +480,13 @@ class GlyphData:
     leftSpaceSourceLabel = property(_get_leftSpaceSourceLabel)
         
     def _get_rightSpaceSourceLabel(self):
-        """Answer the string where this space gets from. Answer None if there is non source."""
+        """Answer the string where the right margin gets from. Answer None if there is no source.
+        This method is used for reporting about the glyph spacing in the EditorWindow, not at Python source.
+
+        >>> gd = GlyphData(name='A', l=40, l2r='A')
+        >>> gd.rightSpaceSourceLabel
+        'L-->R /A'
+        """
         if self.w is not None:
             return f'Width /{self.w}'
         if self.r is not None:
@@ -424,5 +507,10 @@ class GlyphData:
     rightSpaceSourceLabel = property(_get_rightSpaceSourceLabel)
 
 GD = GlyphData
+
+if __name__ == '__main__':
+    import doctest
+    import sys
+    sys.exit(doctest.testmod()[0])
 
 

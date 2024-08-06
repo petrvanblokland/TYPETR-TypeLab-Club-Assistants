@@ -24,14 +24,14 @@ importlib.reload(assistantLib)
 WindowClass = FloatingWindow # Is always available, but it can block the view of other windows if the Asistant window grows in size.
 
 # Add paths to libs in sibling repositories. The assistantLib module contains generic code for Asistanta.s
-PATHS = ['../TYPETR-Assistants/']
+PATHS = ['../TYPETR-TypeLab-Club-Assistants/']
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)
         sys.path.append(path)
 
 # Add paths to libs in sibling repositories
-PATHS = ['../TYPETR-Assistants/']
+PATHS = ['../TYPETR-TypeLab-Club-Assistants/']
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

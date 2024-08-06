@@ -338,9 +338,13 @@ class GlyphAnalyzer:
         changes and the update the partically.
         Do not store the /g, since the RGlyph wrapper may change by RoboFont, keeping the content alike.
         """
-        self.glyphPath = g.getRepresentation("defconAppKit.NSBezierPath") # Used for white/black positions
-        
+        try: # Only works when used inside RoboFont scripts
+            self.glyphPath = g.getRepresentation("defconAppKit.NSBezierPath") # Used for white/black positions
+        except AttributeError:
+            self.glyphPath = None
+
         self._pointContexts = []
+        self.bounds = g.bounds
 
         self._stems = {} # Holds dictionary for horizonal relation between verticals
         self._verticals = {} # Dictioanry with all verticals (round and straight)
@@ -546,7 +550,19 @@ class GlyphAnalyzer:
     dValues = property(_get_dValues)
     
 
-
+    def _get_overshoot(self):
+        """Answer the (bottom) overshoot of this glyph. This only works for glyphs that have a “free” 
+        rounding at the bottom, overshooting the baseline."""
+        return abs(self.minY)
+    overshoot = property(_get_overshoot)
+    
+    def _get_minY(self):
+        """Answer the minimal y position for this glyph. Answer 0 if the outline/components don't exists."""
+        if self.bounds is None:
+            return 0
+        return self.bounds[1]
+    minY = property(_get_minY)
+         
     def isBlackStem(self, v1, v2):
         """Test if these two verticals span a stem, black in the middle."""
         tx, ty = min(v1.x, v2.x) + abs(v1.x - v2.x)/2, min(v1.y, v2.y) + abs(v1.y - v2.y)/2
@@ -559,6 +575,8 @@ class GlyphAnalyzer:
                 
     def onBlack(self, x, y):
         """Answers if the single point `(x, y)` is on black."""
+        if self.glyphPath is None: # Only is available for scripts running inside RoboFont
+            return False
         return self.glyphPath.containsPoint_((x, y))
 
     def spanBlack(self, x1, y1, x2, y2, step=SPANSTEP):

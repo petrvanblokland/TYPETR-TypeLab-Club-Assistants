@@ -28,7 +28,7 @@ In all these cases, make sure to backup your UFO files.
 ## Getting started with MyAssistant-001.py
 
 * Copy the file *MyAssistant-001.py* to your own local repository directory (e.g. *MyProject/*) that also contains a directory with UFO files (e.g. in *ufo/*) and rename it to *MyAssistant-001.py*
-* Make sure that this respository directory *MyProject/* is sibling to the TYPETR-*Assistants* diredctory. This way we can find the libraries by *../TYPETR-Assistants/assistantLib/*
+* Make sure that this respository directory *MyProject/* is sibling to the TYPETR-*Assistants* diredctory. This way we can find the libraries by *../TYPETR-TypeLab-Club-Assistants/assistantLib/*
 * The 3 digits in the *MyAssistant-001.py* file name is a version number. Since working on the Assistant is an ongoing process during a project, you want to be able to got back to previous, other than the versioning of GitHub. Working together with a group of designers, it is clear which version is the latest and which is under beta-development.
 * Open the new *MyAssistant-001.py* in RoboFont and open 
 

@@ -165,10 +165,10 @@ cython_debug/
 _local/
 _ufo/
 _export/
-_burned
-_nursery
-_old
-_tnbits
-_models
+_burned/
+_nursery/
+_old/
+_tnbits/
+_models/
 
 

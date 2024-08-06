@@ -47,7 +47,7 @@ GROUP_NAME_PARTS = {
 BASE_SCRIPTS1 = (LT1, CY1, GR1, ASC1, FIG1, NUMR1, DNOM1)
 BASE_SCRIPTS2 = (LT2, CY2, GR2, ASC2, FIG2, NUMR2, DNOM2)
 
-# For now, this is an italic table.
+# For now, this is a typical italic table.
 
 KERN_GROUPS = (
     (LT1, LT2),

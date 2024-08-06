@@ -14,7 +14,7 @@ from mojo.roboFont import AllFonts, OpenFont, RGlyph, RPoint
 from mojo.UI import OpenGlyphWindow, CurrentGlyphWindow, getGlyphViewDisplaySettings, setGlyphViewDisplaySettings
 
 # Add paths to libs in sibling repositories
-PATHS = ('../TYPETR-Assistants/',)
+PATHS = ('../TYPETR-TypeLab-Club-Assistants/',)
 for path in PATHS:
     if not path in sys.path:
         print('@@@ Append to sys.path', path)

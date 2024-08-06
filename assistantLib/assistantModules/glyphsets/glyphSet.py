@@ -10,49 +10,85 @@ from copy import deepcopy
 import codecs
 import os
 
+if __name__ == '__main__': # Used for doc tests to find assistantLib
+    import os, sys
+    PATH = '/'.join(__file__.split('/')[:-4]) # Relative path to this respository that holds AssistantLib
+    if not PATH in sys.path:
+        sys.path.append(PATH)
+
 from assistantLib.assistantModules.glyphsets.glyphData import *
 from assistantLib.assistantModules.glyphsets.anchorData import AD 
+from assistantLib.assistantModules.glyphsets.Latin_S_set import LATIN_S_SET, LATIN_S_SET_NAME
+from assistantLib.assistantModules.glyphsets.Latin_M_set import LATIN_M_SET, LATIN_M_SET_NAME
+from assistantLib.assistantModules.glyphsets.Latin_L_set import LATIN_L_SET, LATIN_L_SET_NAME
+from assistantLib.assistantModules.glyphsets.Latin_XL_set import LATIN_XL_SET, LATIN_XL_SET_NAME
+from assistantLib.assistantModules.glyphsets.TYPETR_full_set import TYPETR_FULL_SET, TYPETR_FULL_SET_NAME
+from assistantLib.assistantModules.glyphsets.TYPETR_UpgradeNeon_set import TYPETR_UPGRADENEON_SET, TYPETR_UPGRADENEON_SET_NAME
+from assistantLib.assistantModules.glyphsets.MS_WGL4_Segoe_set import MS_WGL4_SEGOE_SET, MS_WGL4_SEGOE_SET_NAME
+
+GLYPH_DATA_SETS = { # Allow them to be retrieved by name
+    LATIN_S_SET_NAME: LATIN_S_SET,
+    LATIN_M_SET_NAME: LATIN_M_SET,
+    LATIN_L_SET_NAME: LATIN_L_SET,
+    LATIN_XL_SET_NAME: LATIN_XL_SET,
+    TYPETR_FULL_SET_NAME: TYPETR_FULL_SET,
+    TYPETR_UPGRADENEON_SET_NAME: TYPETR_UPGRADENEON_SET,
+    MS_WGL4_SEGOE_SET_NAME: MS_WGL4_SEGOE_SET,
+}
 
 class GlyphSet:
     """GlyphSet behaves like a dictionary of GlyphData instances.
-    GlyphData instances are records that keep information about each individual glyph.
+    GlyphData instances are records that keep information about each individual glyph, that cannot be stored
+    (and easily altered manually) in the UFO glyph file. Technically, this information could be in the glyph.lib,
+    but this way it's more visible together and it can be searched on for the whole font in an editor.
+
+    The name of the glyphset needs to be defined in GLYPH_SETS, otherwise an error is raised.
 
     >>> from glyphData import *
     >>> from anchorData import AD
-    >>> glyphs = {}
-    >>> glyphs['A'] = GD(l2r='A', uni=65, c='A', name='A', srcName='A', hex='0041', anchors=(AD.TOP_, AD.MIDDLE_, AD.BOTTOM_), comment='A Uppercase Alphabet, Latin', gid=35)
-    >>> glyphs['Aacute'] = GD(l='A', r='A', uni=193, c='Á', name='Aacute', srcName='Aacute', hex='00c1', anchors=(AD.TOP_, AD.MIDDLE_, AD.BOTTOM_),  base='A', accents=['acutecmb'], comment='Á A WITH ACUTE, LATIN CAPITAL LETTER', gid=130)
-    >>> gs = GlyphSet(glyphs)
+    >>> gs = GlyphSet()
     >>> gs
-    <GlyphSet 2 glyphs>
-    >>> gs.saveGlyphSetSource() # Save Python source of the glyphset into _export/Exported_GlyphSet.py
+    <GlyphSet 354 glyphs>
     >>> gd = gs['A']
     >>> gd
-    <GlyphData A>
+    <GlyphData A l2r=A>
     >>> gd.anchors
-    ('top', 'middle', 'bottom')
-    >>> gs['B']
+    ['bottom', 'middle', 'ogonek', 'tonos', 'top']
+    >>> gs['doestNotExist']
     >>> gd = gs['Aacute']
     >>> gd.c
     'Á'
     >>> gd.base
     'A'
     >>> gd.accents
-    ['acutecmb']
+    ['acutecomb']
     >>> gd.components
-    ['A', 'acutecmb']
+    ['A', 'acutecomb']
     >>> gd.comment
     'Á A WITH ACUTE, LATIN CAPITAL LETTER'
 
+    >>> gs = GlyphSet(TYPETR_FULL_SET_NAME)
+    >>> gs
+    <GlyphSet 711 glyphs>
+
+    >>> gs = GlyphSet(TYPETR_UPGRADENEON_SET_NAME)
+    >>> gs
+    <GlyphSet 948 glyphs>
+
+    >>> gs = GlyphSet(MS_WGL4_SEGOE_SET_NAME) # Huge glyphset!
+    >>> gs
+    <GlyphSet 2548 glyphs>
+
     """
 
-    # For doc-testing only. Redefine in inheriting classes.
-    GLYPH_DATA = {} # Key is glyph name, value is GlyphData instance
-
-    def __init__(self, glyphData=None):
-        if glyphData is None:
-            glyphData = self.GLYPH_DATA # Redefined by inheriting class
-        self.glyphs = deepcopy(glyphData) # Deep copy the data, in case it's altered by the instance.
+    def __init__(self, name=LATIN_S_SET_NAME, glyphDataSet=None):
+        """If glyphData is omitted, then choose by name from the GLYPH_DATA_SETS. If name is omitted too, 
+        then default the glyphDataSet to LATIN_S_SET"""
+        if glyphDataSet is None:
+            assert name in GLYPH_DATA_SETS, (f'### Unknown glyphset: {name}')
+            glyphDataSet = GLYPH_DATA_SETS[name]
+        self.glyphs = deepcopy(glyphDataSet) # Deep copy the data, in case it's altered by the instance.
+        self.name = name
 
         self.unicode2GlyphName = {} # Key is unicode, value is glyph name
         self.anchor2GlyphNames = {} # Key is names of anchors. Value if a list of glyph names that implement the anchor.
@@ -92,7 +128,13 @@ class GlyphSet:
         return self.glyphs.get(gName, None)
 
     def getAnchorGlyphNames(self, anchorName):
-        """Answer the list of glyphs that have this anchor"""
+        """Answer the list of glyphs that have this anchor
+
+        >>> from glyphData import *
+        >>> from anchorData import AD
+        >>> glyphs = {}
+
+        """
         return self.anchor2GlyphNames.get(anchorName)
 
     def getAnchorDiacriticNames(self, anchorName):
@@ -189,15 +231,17 @@ class GlyphSet:
 #     Usage by MIT License
 # ..............................................................................
 #
-#     Auto-generated by %s
-#     %s
+#     Auto-generated by TYPETR Assistant GlyphSet.saveGlyphSetSource
+#     
 #
 try:
     from assistantLib.assistantModules.glyphsets.glyphData import *
 except ModuleNotFoundError:
     from glyphData import *
 
-GLYPH_DATA = {
+MY_GLYPH_SET_NAME = 'MyGlyphSet'
+
+MY_GLYPH_SET = {
 """ % (self.__class__.__name__, filePath))
         initial = None
         for gName, gd in sorted(self.glyphs.items()):
@@ -208,5 +252,10 @@ GLYPH_DATA = {
         out.write('}\n')
         out.close()
 
+
+if __name__ == '__main__':
+    import doctest
+    import sys
+    sys.exit(doctest.testmod()[0])
 
 
