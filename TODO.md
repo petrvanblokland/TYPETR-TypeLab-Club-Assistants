@@ -1,6 +1,25 @@
 # TYPETR-Assistants TODO
 
-Implement functions from old separate sources:
+### Implemented modules
+
+* overlay (show left/overlay/right glyphs in EditorWindow. Select alignment. [g] key to snap points to overlay background
+
+### Implement existing modules in this new Assistant architecture
+
+* anchors (automatic creation of anchors)
+* components (checks on the compatible amount of components within the design space masters)
+* contours (checks on the compatible amount of contours within the design space masters)
+* curves (conversion between Bezier and Quadratics. Curvepalette for curvature selection)
+* dimensions (show values of the GlyphAnalyzer in the EditorWindow)
+* familyOverview (show top bar of current glyph for all design space masters)
+* groups (group management, including Similarity support)
+* guidelines (generate relevant glyph guidelines)
+* interpolate (check interpolation compatibility for all design space masters)
+* italicize (intelligent italicizing for different sources)
+* spacer (spacing by rules, groups and Similarity. Implementing kerning editor inside the EditorWindow. AI for best kerning values)
+
+### Implement functions from old separate sources:
+
 * Dimensioneer002.py
 * CurvePalette003.py
 * Interpolator002.py

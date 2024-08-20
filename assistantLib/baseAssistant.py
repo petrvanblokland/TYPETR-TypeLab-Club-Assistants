@@ -652,7 +652,6 @@ class Assistant(BaseAssistant, Subscriber):
     def glyphEditorGlyphDidChange(self, info):
         """This is a generic glyph.changed() event call. Better not use this one, as it also is triggered on lib changes.
         Best is to only use it in case a self.updateMerz(info) is required, while nothing really changed to the glyph."""
-        print('ZZZ glyphEditorGlyphDidChange', info['glyph'].name)
         self.updateMerz(info)
 
     #   The editor selected another glyph. Update the visible Merz elements for the new glyph."""
@@ -994,7 +993,7 @@ class AssistantController(BaseAssistant, WindowController):
             g.width = g.width + 1
             g.changed()
             g.width = g.width - 1
-            print('$$$ updateEditor')
+            #print('$$$ updateEditor')
                   
     # Handle subscriptions to the EditorWindow events
     
