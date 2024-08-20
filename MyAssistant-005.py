@@ -40,8 +40,8 @@ class MyAssistantController(
     # This is where our demo UFO files live. Change to default ufo/ in your project
     UFO_PATH = 'ufo-try/' 
 
-    # This will create missing MASTER_DATA and GLYPH_DATA sources, based on UFO files in UFO_PATH
-    MAKE_MISSING_MASTER_DATA_GLYPH_DATA = True 
+    # This will create missing MASTERS_DATA and GLYPH_DATA sources, based on UFO files in UFO_PATH
+    MAKE_MISSING_MASTERS_DATA_GLYPH_DATA = True 
 
     PROJECT_PATH = __file__ # Let the AssistantContoller know where this proj4ct file is.
     ADD_GLOBAL_BUTTONS = False # For now, keep it simple

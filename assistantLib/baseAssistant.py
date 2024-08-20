@@ -151,7 +151,7 @@ class BaseAssistant:
 
     ITALIC_ANGLE = 0
 
-    MAKE_MISSING_MASTER_DATA_GLYPH_DATA = False # If the assistant finds a master with unknown MasterData, then create one.
+    MAKE_MISSING_MASTERS_DATA_GLYPH_DATA = False # If the assistant finds a master with unknown MasterData, then create one.
 
     # Point types
     POINTTYPE_BEZIER = 'curve'
@@ -255,22 +255,12 @@ class BaseAssistant:
     def getMasterData(self, f):
         """Answer the MasterData instance for this font, containing meta-information about the entire font."""
         ufoName = self.path2UfoName(f.path)
-        mds = self.getController().MASTER_DATA
-        if mds is None: # No MASTER_DATA defined by inheriting class
-            if self.MAKE_MISSING_MASTER_DATA_GLYPH_DATA: 
-                # Try to build MasterData dictionary from UFOs in self.UFO_PATH    
-                self.MASTER_DATA = mds = {}
-                for ff in self.getAllUfoFonts(self,UFO_PATH):
-                    mds[self.path2UfoName(ff.path)] = MasterData(ff)
-                    print(ff.path, mds[self.path2UfoName(ff.path)])
-
-        if self.MASTER_DATA is not None:
-            if ufoName in self.MASTER_DATA:
-                return self.MASTER_DATA[ufoName]
-            print(f'### MASTER_DATA is defined, but not for {ufoName}.')
+        mdm = self.getController().MDM # Get the masters data manager
+        if ufoName in mdm.mastersData:
+            return mdm.mastersData[ufoName]
                     
         print(f'### Cannot find or create MasterData for {ufoName}')
-        return MasterData(f)
+        return MasterData(ufoName, f.path)
 
     def getGlyphData(self, g):
         """Answer the GlyphData instance for this glyph, containing meta-information. It's either derives from g.lib
@@ -844,15 +834,15 @@ class AssistantController(BaseAssistant, WindowController):
     UFO_PATHS = None 
 
     # If there's masterData available, then this should be redefined as dictionaty by inheriting Assistant classes
-    MASTER_DATA = None 
+    MASTERS_DATA = None 
     # Needs to be redefined in the inheriting "MyAssistantController" class  on project level.
     PROJECT_PATH = None # Needs to be redefined in the inheriting "MyAssistantController" class on project level.
 
-    # Make MASTER_DATA and _GLYPH_DATA if missing, and export as local Python source for later editing.
+    # Make MASTERS_DATA and _GLYPH_DATA if missing, and export as local Python source for later editing.
     # This requires at leasst on existing UFO file in ufo/
-    MAKE_MISSING_MASTER_DATA_GLYPH_DATA = False # Set to True for demo or for start a new project from scratch.
+    MAKE_MISSING_MASTERS_DATA_GLYPH_DATA = False # Set to True for demo or for start a new project from scratch.
     # Either this is set by the inheriting Subscriber class or 
-    # initialized if MAKE_MISSING_MASTER_DATA_GLYPH_DATA is set to True
+    # initialized if MAKE_MISSING_MASTERS_DATA_GLYPH_DATA is set to True
     GLYPH_DATA = None 
 
     # Default constants, to be overwritten by inheriting classes

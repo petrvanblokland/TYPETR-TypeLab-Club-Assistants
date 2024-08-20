@@ -573,36 +573,36 @@ class MasterDataManager:
 
     >>> mdm.save()
     """
-    def __init__(self, masterData, ufoDirPath, glyphSet=None):
+    def __init__(self, mastersData, ufoDirPath, glyphSet=None):
         # If masterData is None or empty, then try to create it by filling guessed data
         self.ufoDirPath = ufoDirPath # Absolute path reference to the ufo/ directory
         self.path = None # Will be initialized as parent of ufoPath
         self.ufoPath = None # Use the first UFO that we find as reference.
-        if masterData is None or len(masterData) == 0:
-            masterData = {}
-        self.masterData = masterData
+        if mastersData is None or len(mastersData) == 0:
+            mastersData = {}
+        self.mastersData = mastersData
         ufoPaths = path2UfoPaths(ufoDirPath)
         for ufoPath in ufoPaths:
             md = self.findPath2MasterData(ufoPath) # Find the masterData that fits this ufoPath, if it exists.
             if md is None: # If it does not exist, try to create a MasterData for this ufo
                 md = MasterData.fromUfoPath(ufoPath)
-                self.masterData[md.name] = md
+                self.mastersData[md.name] = md
 
     def findPath2MasterData(self, ufoPath):
-        for name, md in self.masterData.items():
+        for name, md in self.mastersData.items():
             if ufoPath == md.ufoPath:
                 return md
         return None
 
     def keys(self):
-        return self.masterData.keys()
+        return self.mastersData.keys()
 
     def __getitem__(self, key):
-        return self.masterData[key]
+        return self.mastersData[key]
 
     def __setitem__(self, key, md):
         assert isinstance(md, MasterData)
-        self.masterData[key] = md
+        self.mastersData[key] = md
 
     def save(self, fileName=None):
         """Save the Python source of the current dict of MasterData"""
@@ -618,7 +618,7 @@ from assistantLib.assistantModules.data import MasterData as MD
 MASTERS_DATA = {
 """
     
-        for name, md in sorted(self.masterData.items()):
+        for name, md in sorted(self.mastersData.items()):
             s += f"""\t'{name}': {md.asSource()}"""
 
         s += '}\n\n'

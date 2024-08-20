@@ -18,7 +18,7 @@ Since Assistant are ongoing development, some warnings are necessary:
 
 * Assistants do not work very well if there are any UFOs are opened from other projects, because it won’t be able to find their **MasterData** descriptions.
 * If missing **MasterData** or **GlyphData** are found, close RoboFont and add these records to the sources first.
-* In case UFO masters are renamed, make sure to change the corresponding names in the **MASTER_DATA** as well.
+* In case UFO masters are renamed, make sure to change the corresponding names in the **MASTERS_DATA** as well.
 * Assistants try to keep track of opened fonts in preference of UFO fonts that are opened in the background. However, RoboFont sometimes gets confused, e.g. in the case an [Update] is done. Best is so quit RoboFont or at least close the Assistant window and then start the Assistant again. 
 
 In all these cases, make sure to backup your UFO files. 
@@ -83,7 +83,7 @@ class MyAssistant(
 class MyAssistantController(
 		AssistantController, 
 	):
-	MASTER_DATA = {} 
+	MASTERS_DATA = {} 
 	PROJECT_PATH = __file__
 	ADD_GLOBAL_BUTTONS = False 
 
@@ -100,7 +100,7 @@ Our new **MyAssistant** class always must  inherit from the **Assistant** class,
 
 The new **MyAssistantController** class always must inherit from the **AssistantController** class, thus implementing everthing that the base Assistant Controller needs.
 
-* The class variable **MASTER_DATA** is a placeholder for now. It will later contain **MasterData** instances, holding all meta data about UFO masters that the Assistant function modules need.
+* The class variable **MASTERS_DATA** is a placeholder for now. It will later contain **MasterData** instances, holding all meta data about UFO masters that the Assistant function modules need.
 * The class variable **PROJECT_PATH** tel;s the Assistant what the file path of the project is. This way it can locate all resources by relative path, such as *ufo/* UFO file paths.
 
 Running this code should show no error, it opens an empty small (250 x 250) default Assistant window, with a default title.
@@ -189,16 +189,16 @@ Since we just did build the UI without any event subscription, the current versi
 
 ## MyAssistant-005.py
 
-The basis of Asistants is that they assume the existence of **MASTER_DATA** and **GLYPH_DATA**. Instead of keeping the main parameters of masters and glyphs in the UFO (which my definition nu incomplete), we keep two dictionaries in the project respository:
+The basis of Asistants is that they assume the existence of **MASTERS_DATA** and **GLYPH_DATA**. Instead of keeping the main parameters of masters and glyphs in the UFO (which my definition nu incomplete), we keep two dictionaries in the project respository:
 
-* **MASTER_DATA** This is a dictionary (key is the UFO file path, value is a **MasterData** instance), that is normally defined by the top project Assistant source.
+* **MASTERS_DATA** This is a dictionary (key is the UFO file path, value is a **MasterData** instance), that is normally defined by the top project Assistant source.
 * **GLYPH_DATA** This is a dictionary (key is the glyph nane, value is a **GlyphData** instance), that is defined as one of the “standard” glyph sets in the Asisstant library. Over time the selection of glyph sets (as TYPETR project) will increase. But for individual projects it is better to define a local dictionary that is imported.
 
-When a new project starts, it is likely that there is already a UFO to start with. In that case it is better to have the Assistant create a new source for **MASTER_DATA** and **GLYPH_DATA**, based on what it can find in the UFO sources in **UFO_PATH**.
+When a new project starts, it is likely that there is already a UFO to start with. In that case it is better to have the Assistant create a new source for **MASTERS_DATA** and **GLYPH_DATA**, based on what it can find in the UFO sources in **UFO_PATH**.
 
 Set the **UFO_PATH** to indicate where UFO files can be found. In normal projects this is stypically set to *ufo/*
 
-By setting the **MyAssistantController** class variable **MAKE_MISSING_MASTER_DATA_GLYPH_DATA**, the Assistant is forced to create those files if they are missing. For normal use this value should be **False** avoiding the overwrite of manually edited sources.
+By setting the **MyAssistantController** class variable **MAKE_MISSING_MASTERS_DATA_GLYPH_DATA**, the Assistant is forced to create those files if they are missing. For normal use this value should be **False** avoiding the overwrite of manually edited sources.
 
 ~~~
 
@@ -207,9 +207,9 @@ By setting the **MyAssistantController** class variable **MAKE_MISSING_MASTER_DA
 	# Change to default ufo/ in your project
 	UFO_PATH = 'ufo-try/' 
 
-	# This will create missing MASTER_DATA and GLYPH_DATA sources, 
+	# This will create missing MASTERS_DATA and GLYPH_DATA sources, 
 	# based on UFO files in UFO_PATH
-	MAKE_MISSING_MASTER_DATA_GLYPH_DATA = True 
+	MAKE_MISSING_MASTERS_DATA_GLYPH_DATA = True 
 
 ~~~
 

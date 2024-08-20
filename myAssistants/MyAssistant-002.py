@@ -26,7 +26,7 @@ class MyAssistant(
 class MyAssistantController(
 		AssistantController, 
 	):
-	MASTER_DATA = {} # This will contain all meta information about the masters as MasterData instances.
+	MASTERS_DATA = {} # This will contain all meta information about the masters as MasterData instances.
 	PROJECT_PATH = __file__ # Let the AssistantContoller know where this proj4ct file is.
 	ADD_GLOBAL_BUTTONS = False # For now, keep it simple
 

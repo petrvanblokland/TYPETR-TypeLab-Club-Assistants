@@ -278,7 +278,7 @@ class SegoeUIItalicAssistant(Assistant,
 
     GS = MS_GlyphSet()
     
-    MASTER_DATA = {
+    MASTERS_DATA = {
         
         #    D I S P L A Y
         
@@ -753,7 +753,8 @@ class SegoeUIItalicAssistantController(
 
     # For Proofing
     MAX_PAGES = 1
-    PROOF_FONT_PATH = '_ttf/SegUIVar.ttf'    PROOF_FONT_ITALIC_PATH = '_ttf/SegoeUI-Italic-wght3-opsz3-vf-VF.ttf' 
+    PROOF_FONT_PATH = '_ttf/SegUIVar.ttf'
+    PROOF_FONT_ITALIC_PATH = '_ttf/SegoeUI-Italic-wght3-opsz3-vf-VF.ttf' 
     PROOF_PDF_NAME = 'SegoeUI-Italic.pdf' 
     INSTANCE_POSITIONS = [
         (dict(wght=300, opsz=24), 'Light Display'),
