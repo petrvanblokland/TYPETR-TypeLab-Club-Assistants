@@ -25,7 +25,7 @@ if __name__ == '__main__': # Used for doc tests to find assistantLib
 
 from assistantLib.toolbox import path2UfoPaths, path2Dir, path2FileName
 from assistantLib.assistantModules.glyphsets.glyphData import * 
-from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet, LATIN_S_SET_NAME
+from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet, LATIN_S_SET_NAME, GLYPH_DATA_SETS
 import assistantLib.assistantModules.glyphsets.anchorData
 importlib.reload(assistantLib.assistantModules.glyphsets.anchorData)
 from assistantLib.assistantModules.glyphsets.anchorData import AD
@@ -68,7 +68,7 @@ class MasterData:
 
     def __init__(self, name, ufoPath, 
             srcUFOPath=None, someUFOPath=None, orgUFOPath=None, 
-            groupSrcUFOPath=None, # Optioncal copy groups from here, otherwise use orgUFOPath
+            groupSrcUFOPath=None, # Optional copy groups from here, otherwise use orgUFOPath
             kerningSrcUFOPath=None, # Optional copy kerning from here, otherwise use orgUFOPath
             romanItalicUFOPath=None, # Path of corresponding master for roman <--> italic
             spacingSrcUFOPath=None, # If defined, used as spacing reference, overwriting all spacing rules. Goes with spacingOffset
@@ -83,7 +83,7 @@ class MasterData:
             # GlyphSet instance, describing the glyph set and GlyphData characteristics. 
             # This attribute must be defined, or else the Latin_S_set (Small) will be used.
             glyphSet=None, 
-            glyphSetName=None,
+            glyphSetName=LATIN_S_SET_NAME, # Default small glyph set, unless defined differently
             # Vertical metrics
             baseline=0, stemOvershoot=STEM_OVERSHOOT, baseOvershoot=None, capOvershoot=None, scOvershoot=None, supsOvershoot=None,
             ascender=None, descender=None,
@@ -176,6 +176,9 @@ class MasterData:
         self.tabWidth = tabWidth
 
         # Glyphs
+        self.glyphSetName = glyphSetName
+        if glyphSet is None and glyphSetName in GLYPH_DATA_SETS:
+            glyphSet = GLYPH_DATA_SETS[glyphSetName]
         if glyphSet is None:
             # Make a default GlyphSet instance, if not defined.
             glyphSet = GlyphSet()
@@ -238,7 +241,7 @@ class MasterData:
             scHeight = xHeight
         self.scHeight = scHeight
         if supsHeight is None:
-            supsHeight = xHeight * 2/3
+            supsHeight = int(round(xHeight * 2/3))
         self.supsHeight = supsHeight
 
         if middlexHeight is None:
@@ -343,7 +346,7 @@ class MasterData:
 
         # Not trying to match the glyphset of ufoPath with the ones that are defined.
         # It's up to the designer/developer of the masterData.py to decide which one it should be.
-        glyphSetName = LATIN_S_SET_NAME
+        self.glyphSetName = LATIN_S_SET_NAME
 
         f = RFont(ufoPath) # Open to UFO to harvest and guess parameters
         
@@ -363,7 +366,7 @@ class MasterData:
         md = cls(name, ufoPath=ufoPath, 
             romanItalicUFOPath=cls.guessRomanItalicPath(ufoPath), # Guess the roman <--> italic compantion master
             # Glyphs
-            glyphSetName=glyphSetName,
+            glyphSetName=self.glyphSetName,
             # Angles
             italicAngle=f.info.italicAngle,
             # Vertical metrics
@@ -488,20 +491,98 @@ class MasterData:
         s.append(f"""ufoPath='{self.localUfoPath}',""")
         if self.ttfPath is not None:
             s.append(f"""ttfPath='{self.ttfPath}',""")
-        s.append('#\tAngles')
+        s.append(f"""# GlyphSet instance, describing the glyph set and GlyphData characteristics. """)
+        s.append(f"""# This attribute must be defined, or else the Latin_S_set (Small) will be used.""")
+        s.append(f"""glyphSetName='{self.glyphSetName}',""")
+        s.append(f"""# """)
+        s.append('#    Angles & italics')
+        s.append(f"""# """)
         s.append(f"""italicAngle={self.italicAngle},""")
-        s.append('#\tVertical metrics')
+        s.append(f"""italicSkew={self.italicSkew},""")
+        s.append(f"""italicRotation={self.italicRotation},""")
+        s.append(f"""# """)
+        s.append('#    Vertical metrics')
+        s.append(f"""# """)
         s.append(f"""ascender={self.ascender},""")
         s.append(f"""capHeight={self.capHeight},""")
         s.append(f"""xHeight={self.xHeight},""")
+        s.append(f"""scHeight={self.scHeight},""")
+        s.append(f"""supsHeight={self.supsHeight},""")
         s.append(f"""descender={self.descender},""")
+        s.append(f"""baseline={self.baseline},""")
         s.append(f"""baseOvershoot={self.baseOvershoot},""")
+        s.append(f"""stemOvershoot={self.stemOvershoot},""")
         s.append(f"""capOvershoot={self.capOvershoot},""")
         s.append(f"""scOvershoot={self.scOvershoot},""")
         s.append(f"""supsOvershoot={self.supsOvershoot},""")
-        s.append('#\tInfo')
+        s.append(f"""# """)
+        s.append(f"""#    Anchors""")
+        s.append(f"""# """)
+        s.append(f"""ascenderAnchorOffsetY={self.ascenderAnchorOffsetY},""")
+        s.append(f"""boxTopAnchorOffsetY={self.boxTopAnchorOffsetY},""")
+        s.append(f"""capHeightAnchorOffsetY={self.capHeightAnchorOffsetY}, # Optional vertical offset of cap-anhors or lower capital diacritics.""")
+        s.append(f"""xHeightAnchorOffsetY={self.xHeightAnchorOffsetY},""")
+        s.append(f"""baselineAnchorOffsetY={self.baselineAnchorOffsetY},""")
+        s.append(f"""ogonekAnchorOffsetY={self.ogonekAnchorOffsetY},""")
+        s.append(f"""boxBottomAnchorOffsetY={self.boxBottomAnchorOffsetY},""")
+        s.append(f"""descenderAnchorOffsetY={self.descenderAnchorOffsetY},""")
+        s.append(f"""# """)
+        s.append('#    Info')
+        s.append(f"""# """)
         if self.copyright is not None:
             s.append(f"""copyright='{self.copyright}',""")
+        s.append(f"""# """)
+        s.append(f"""#    MasterData parameters to be added for automatic generation""")
+        s.append(f"""# """)
+        s.append(f"""# srcUFOPath=None""")
+        s.append(f"""# someUFOPath=None""") 
+        s.append(f"""# orgUFOPath=None""")
+        s.append(f"""# groupSrcUFOPath=None""")
+        s.append(f"""# """)
+        s.append(f"""# Optional copy groups from here, otherwise use orgUFOPath""")
+        s.append(f"""# """)
+        s.append(f"""# kerningSrcUFOPath=None, # Optional copy kerning from here, otherwise use orgUFOPath""")
+        s.append(f"""# romanItalicUFOPath=None, # Path of corresponding master for roman <--> italic""")
+        s.append(f"""# spacingSrcUFOPath=None, # If defined, used as spacing reference, overwriting all spacing rules. Goes with spacingOffset""")
+        s.append(f"""# spacingOffset=0, # Value to add to margins of self.spacingSrcUFOPath (if defined)""")
+        s.append(f"""# dsPosition=None,""")
+        s.append(f"""# m0=None, # Origin of the design space""")
+        s.append(f"""# m1=None, m2=None, # Used for interpolating spacing, outlines, anchor positions, component positions""")
+        s.append(f"""# sm1=None, sm2=None, # Scalerpolate masters for condensed and extended making""")
+        s.append(f"""# osm1=None, osm2=None, # Previous and next master on the same optical size level""")
+        s.append(f"""# tripletData1=None, tripletData2=None, featurePath=None, """)
+        s.append(f"""# """)
+        s.append(f"""#    Vertical metrics""")
+        s.append(f"""# """)
+        s.append(f"""# numrBaseline=None, supsBaseline=None, sinfBaseline=None, dnomBaseline=None, modBaseline=None,""")
+        s.append(f"""# middlexHeight=None, middleCapHeight=None,""")
+        s.append(f"""# Vertical anchor offsets to avoid collission with baseline, guidlines, etc. in mouse selection""")
+        s.append(f"""# baseDiacriticsTop=None, capDiacriticsTop=None, scDiacriticsTop=None, # Baseline of top diacritics""")
+        s.append(f"""# baseDiacriticsBottom=None, # Top of bottom diacritis""")
+        s.append(f"""#    Horizontal metrics""")
+        s.append(f"""# """)
+        s.append(f"""# diagonalTolerance=0, # ± Tolerance for italic diagonals to be marked as off-limit""")
+        s.append(f"""# HStem=None, HThin=None, OStem=None, OThin=None,""")
+        s.append(f"""# HscStem=None, HscThin=None, OscStem=None, OscThin=None,""")
+        s.append(f"""# nStem=None, oStem=None, oThin=None, UThin=None, VThin=None, eThin=None,""")
+        s.append(f"""# thickness=10, distance=16, # Used for Neon tubes, can be overwritten from GlyphData.thickness""")
+        s.append(f"""# tabWidth=None,""")
+        s.append(f"""# """)
+        s.append(f"""#    Table stuff""")
+        s.append(f"""# """)
+        s.append(f"""# ttfPath=None, platformID=None, platEncID=None, langID=None, """)
+        s.append(f"""# unitsPerEm=UNITS_PER_EM, copyright=COPYRIGHT, uniqueID=None, trademark=TRADEMARK, """)
+        s.append(f"""# lowestRecPPEM=LOWEST_PPEM,""")
+        s.append(f"""# familyName=None, styleName=None,""")
+        s.append(f"""# fullName=None, version=None, versionMajor=VERSION_MAJOR, versionMinor=VERSION_MINOR,""")
+        s.append(f"""# postscriptName=None, preferredFamily=None, preferredSubFamily=None,""")
+        s.append(f"""# openTypeOS2WinAscent=None, openTypeOS2WinDescent=None,""")
+        s.append(f"""# openTypeOS2Type=[2, 8], # fsType, TN standard""")
+        s.append(f"""# vendorURL=None, manufacturerURL=None, manufacturer=None,""")
+        s.append(f"""# designerURL=None, designer=None, """)
+        s.append(f"""# eulaURL=None, eulaDescription=None,""")
+        s.append(f"""# underlinePosition=None, underlineThickness=None""")
+
         """
         self.platformID = platformID
         self.platEncID = platEncID
@@ -514,7 +595,7 @@ class MasterData:
 
         self.fullName = fullName
         """
-        return '\n        '.join(s) + '\n\t),\n\n' # Indent by 8 spaces, instead of tabs
+        return '\n        '.join(s) + '\n    ),\n\n' # Indent by 8 spaces, instead of tabs
 
 MD = MasterData
 

@@ -80,7 +80,7 @@ class AssistantModuleCurves(BaseAssistantModule):
         # controlDown = event['controlDown']
         # optionDown = event['optionDown']
         # capLock = event['capLockDown']
-        
+
         self.curvesConvert(g, self.POINTTYPE_QUADRATIC, self.POINTTYPE_BEZIER, FACTOR)
 
     #    B E Z I E R --> Q U A D R A T I C
@@ -111,6 +111,7 @@ class AssistantModuleCurves(BaseAssistantModule):
 
     def curvesConvert(self, g, fromType, toType, factor):
         # Make sure to unselect all points
+        print(f'... Convert curves of /{g.name} {fromType} --> {toType}')
         for contour in g.contours:
             points = contour.points
             for n in range(len(points)):

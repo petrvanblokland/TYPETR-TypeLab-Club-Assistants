@@ -425,7 +425,7 @@ class AssistantModuleOverlay(BaseAssistantModule):
 
     def updateOverlayColorSlider(self, sender):
         """The one of the left/middle/right color sliders was changed, update the color of the overlays accordingly."""
-        print('### updateOverlayColorSlider')
+        #print('### updateOverlayColorSlider')
         self.updateEditor(sender)
 
     def updateOverlayPositionCallback(self, sender):
