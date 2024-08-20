@@ -23,6 +23,7 @@ if __name__ == '__main__': # Used for doc tests to find assistantLib
     if not PATH in sys.path:
         sys.path.append(PATH)
 
+from assistantLib.toolbox import path2UfoPaths, path2Dir
 from assistantLib.assistantModules.glyphsets.glyphData import * 
 from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet, LATIN_S_SET_NAME
 import assistantLib.assistantModules.glyphsets.anchorData
@@ -80,7 +81,7 @@ class MasterData:
             osm1=None, osm2=None, # Previous and next master on the same optical size level
             tripletData1=None, tripletData2=None, featurePath=None, 
             # GlyphSet instance, describing the glyph set and GlyphData characteristics. 
-            # This attribute must be defined, or else the Latin_S (Small) will be used.
+            # This attribute must be defined, or else the Latin_S_set (Small) will be used.
             glyphSet=None, 
             glyphSetName=None,
             # Vertical metrics
@@ -518,7 +519,7 @@ class MasterData:
 MD = MasterData
 
 class MasterDataManager:
-    """The MasterDataManager handles the connection betweeh the MasterData instances and the directory 
+    """The MasterDataManager handles the connection between the MasterData instances and the directory 
     that contains UFO files. It is assumed that a project has a local masterData.py file that describes 
     all master data that does not fit in font.info. If the file does not exist or if it is empty, 
     the MasterDataInstance tries to create it, with best guesses of values that it derives from the UFO files. 
@@ -529,9 +530,9 @@ class MasterDataManager:
     a source for the current masterData. 
 
     >>> # Construct the absolute path where theh type-try UDOs are located.
-    >>> ufoPath = '/'.join(__file__.split('/')[:-3]) + '/ufo-try/' 
+    >>> ufoDirPath = '/'.join(__file__.split('/')[:-3]) + '/ufo-try/' 
     >>> masterData = {} # We start with uninitialized master data
-    >>> mdm = MasterDataManager(masterData, ufoPath=ufoPath, glyphSet=None) # Examine the directory content
+    >>> mdm = MasterDataManager(masterData, ufoDirPath, glyphSet=None) # Examine the directory content
     >>> len(mdm.keys()) # It generated a MasterData instance for each of the demo UFO files.
     10
 
@@ -572,34 +573,20 @@ class MasterDataManager:
 
     >>> mdm.save()
     """
-    def __init__(self, masterData, ufoPath=None, ufoPaths=None, glyphSet=None):
+    def __init__(self, masterData, ufoDirPath, glyphSet=None):
         # If masterData is None or empty, then try to create it by filling guessed data
-        assert ufoPath is not None or ufoPaths is not None
+        self.ufoDirPath = ufoDirPath # Absolute path reference to the ufo/ directory
         self.path = None # Will be initialized as parent of ufoPath
-        if masterData is None or not len(masterData):
+        self.ufoPath = None # Use the first UFO that we find as reference.
+        if masterData is None or len(masterData) == 0:
             masterData = {}
         self.masterData = masterData
-        if ufoPaths is None: # Get all UFO files from ufoPath instead
-            ufoPaths = self.path2UfoPaths(ufoPath)
-            self.ufoPath = '/'.join(ufoPath.split('/')[:-2]) + '/' # Assumes the path is ufo/
+        ufoPaths = path2UfoPaths(ufoDirPath)
         for ufoPath in ufoPaths:
             md = self.findPath2MasterData(ufoPath) # Find the masterData that fits this ufoPath, if it exists.
             if md is None: # If it does not exist, try to create a MasterData for this ufo
                 md = MasterData.fromUfoPath(ufoPath)
                 self.masterData[md.name] = md
-            if self.ufoPath is None: # Use the first UFO that we found as reference.
-                self.ufoPath = '/'.join(ufoPath.split('/')[:-3]) + '/' # Assumes the UFO to be stored in ufo/MyFont.ufo
-
-    @classmethod
-    def path2UfoPaths(cls, path):
-        """Answer a list of all UFO files in the path directory."""
-        ufoPaths = []
-        for fileName in os.listdir(path):
-            if fileName.startswith('.'):
-                continue
-            if fileName.endswith('.ufo'):
-                ufoPaths.append(path + fileName)
-        return ufoPaths
 
     def findPath2MasterData(self, ufoPath):
         for name, md in self.masterData.items():
@@ -617,7 +604,7 @@ class MasterDataManager:
         assert isinstance(md, MasterData)
         self.masterData[key] = md
 
-    def save(self, path=None):
+    def save(self, fileName=None):
         """Save the Python source of the current dict of MasterData"""
         s = """# -*- coding: UTF-8 -*-
 # ------------------------------------------------------------------------------
@@ -636,9 +623,9 @@ MASTERS_DATA = {
 
         s += '}\n\n'
 
-        if path is None:
-            path = self.ufoPath
-        path += 'masterData.py'
+        if fileName is None:
+            fileName = 'myMasterData000.py'
+        path = path2Dir(self.ufoDirPath) + fileName
         f = codecs.open(path, 'w', encoding='utf-8') # Open file, for unicode/UTF-8
         f.write(s) 
         f.close()

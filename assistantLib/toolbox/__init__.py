@@ -6,4 +6,40 @@
 #
 #    TYPETR assistantLib/toolbox
 #
+#
+import os
+
+def path2Dir(path):
+	"""Answer the director that this path is in.
+
+	>>> path2Dir('/dir1/dir2/aFile')
+	'/dir1/dir2/'
+	>>> path2Dir('dir1/dir2/aFile')
+	'dir1/dir2/'
+	>>> path2Dir(__file__).endswith('/TYPETR-TypeLab-Club-Assistants/assistantLib/toolbox/')
+	True
+	"""
+	return '/'.join(path.split('/')[:-1]) + '/'
+
+def path2UfoPaths(path):
+    """Answer a list of all UFO files in the path directory.
+
+	>>> path2UfoPaths(path2Dir(__file__))
+	[]
+	>>> tryUfoPaths = path2UfoPaths(path2Dir(__file__) + '../../ufo-try/')	
+	>>> tryUfoPaths[0].endswith('Upgrade_Try-UltraBlack_Italic.ufo')
+	True
+    """
+    ufoPaths = []
+    for fileName in os.listdir(path):
+        if fileName.startswith('.'):
+            continue
+        if fileName.endswith('.ufo'):
+            ufoPaths.append(path + fileName)
+    return ufoPaths
+
+if __name__ == '__main__':
+    import doctest
+    import sys
+    sys.exit(doctest.testmod()[0])
 

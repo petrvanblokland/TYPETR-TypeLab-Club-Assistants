@@ -998,7 +998,7 @@ class AssistantController(BaseAssistant, WindowController):
             g.width = g.width + 1
             g.changed()
             g.width = g.width - 1
-            print('$$$ updateEditpr')
+            print('$$$ updateEditor')
                   
     # Handle subscriptions to the EditorWindow events
     
