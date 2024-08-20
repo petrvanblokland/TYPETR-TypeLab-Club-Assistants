@@ -23,7 +23,7 @@ if __name__ == '__main__': # Used for doc tests to find assistantLib
     if not PATH in sys.path:
         sys.path.append(PATH)
 
-from assistantLib.toolbox import path2UfoPaths, path2Dir
+from assistantLib.toolbox import path2UfoPaths, path2Dir, path2FileName
 from assistantLib.assistantModules.glyphsets.glyphData import * 
 from assistantLib.assistantModules.glyphsets.glyphSet import GlyphSet, LATIN_S_SET_NAME
 import assistantLib.assistantModules.glyphsets.anchorData
@@ -514,7 +514,7 @@ class MasterData:
 
         self.fullName = fullName
         """
-        return '\n\t\t'.join(s) + '\n\t),\n\n'
+        return '\n        '.join(s) + '\n\t),\n\n' # Indent by 8 spaces, instead of tabs
 
 MD = MasterData
 
@@ -573,7 +573,7 @@ class MasterDataManager:
 
     >>> mdm.save()
     """
-    def __init__(self, mastersData, ufoDirPath, glyphSet=None):
+    def __init__(self, mastersData, ufoDirPath, ufoNames=None, glyphSet=None):
         # If masterData is None or empty, then try to create it by filling guessed data
         self.ufoDirPath = ufoDirPath # Absolute path reference to the ufo/ directory
         self.path = None # Will be initialized as parent of ufoPath
@@ -583,10 +583,11 @@ class MasterDataManager:
         self.mastersData = mastersData
         ufoPaths = path2UfoPaths(ufoDirPath)
         for ufoPath in ufoPaths:
-            md = self.findPath2MasterData(ufoPath) # Find the masterData that fits this ufoPath, if it exists.
-            if md is None: # If it does not exist, try to create a MasterData for this ufo
-                md = MasterData.fromUfoPath(ufoPath)
-                self.mastersData[md.name] = md
+            if ufoNames is None or path2FileName(ufoPath) in ufoNames:
+                md = self.findPath2MasterData(ufoPath) # Find the masterData that fits this ufoPath, if it exists.
+                if md is None: # If it does not exist, try to create a MasterData for this ufo
+                    md = MasterData.fromUfoPath(ufoPath)
+                    self.mastersData[md.name] = md
 
     def findPath2MasterData(self, ufoPath):
         for name, md in self.mastersData.items():
@@ -619,7 +620,7 @@ MASTERS_DATA = {
 """
     
         for name, md in sorted(self.mastersData.items()):
-            s += f"""\t'{name}': {md.asSource()}"""
+            s += f"""    '{name}': {md.asSource()}""" # Ident by 4 spaces,  not tabs.
 
         s += '}\n\n'
 

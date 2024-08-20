@@ -208,7 +208,7 @@ class BaseAssistant:
         if path is not None:
             if path.startswith('/'):
                 return path
-            fullDirPath = self.PROJECT_PATH
+            fullDirPath = self.getController().PROJECT_PATH
             if not fullDirPath.endswith('/'):
                 fullDirPath = '/'.join(fullDirPath.split('/')[:-1]) + '/'
             return fullDirPath + path
@@ -248,19 +248,25 @@ class BaseAssistant:
         return f
     
     def path2UfoName(self, path):
-        return path.split('/')[-1]
+        return path.split('/')[-1].replace('.ufo', '')
 
     #   D A T A
 
-    def getMasterData(self, f):
-        """Answer the MasterData instance for this font, containing meta-information about the entire font."""
+    def getMasterData(self, f, doSave=True):
+        """Answer the MasterData instance for this font, containing meta-information about the entire font.
+        If f is not represented in the current MasterDataManager, then create a new MasterData and save the source."""
         ufoName = self.path2UfoName(f.path)
         mdm = self.getController().MDM # Get the masters data manager
-        if ufoName in mdm.mastersData:
-            return mdm.mastersData[ufoName]
-                    
-        print(f'### Cannot find or create MasterData for {ufoName}')
-        return MasterData(ufoName, f.path)
+        changed = False
+        if ufoName not in mdm.mastersData:
+            md = MasterData(ufoName, f.path)
+            mdm.mastersData[ufoName] = md
+            changed = True
+
+        if doSave or changed:
+            # Save the current source, as it seems to have changed from the original UFO content.
+            mdm.save()
+        return mdm.mastersData[ufoName]
 
     def getGlyphData(self, g):
         """Answer the GlyphData instance for this glyph, containing meta-information. It's either derives from g.lib

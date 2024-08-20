@@ -38,6 +38,14 @@ def path2UfoPaths(path):
             ufoPaths.append(path + fileName)
     return ufoPaths
 
+def path2FileName(path):
+	"""Answer the file name (or current directory nane) of path:
+
+	>>> path2FileName('/dir1/dir2/myFont.ufo')
+	'myFont.ufo'
+	"""
+	return path.split('/')[-1]
+
 if __name__ == '__main__':
     import doctest
     import sys
