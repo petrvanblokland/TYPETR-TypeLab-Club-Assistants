@@ -55,8 +55,9 @@ Running this in RoboFont shows the following response:
 
 **@@@ Append to sys.path ../TYPETR-TypeLab-Club-Assistants/**
 
-* This means that RoboFont could find the *TYPETR-Assistants** directory and installed it as a path. From here we can import the needed libraries.
+* This means that RoboFont could find the **TYPETR-Assistants** directory and installed it as a path. From here we can import the needed libraries.
 * Running it again does not show anything, as the path connection is already made. Only if you restart RoboFont you will see this response again.
+
 
 If this works we can proceed to the next version.
 
@@ -77,11 +78,13 @@ There will be 2 classes:
 
 class MyAssistant(
 		Assistant, 
+		# Inherited module classes go here
 	):
     pass
     	
 class MyAssistantController(
 		AssistantController, 
+		# Inherited module classes go here
 	):
 	MASTERS_DATA = {} 
 	PROJECT_PATH = __file__

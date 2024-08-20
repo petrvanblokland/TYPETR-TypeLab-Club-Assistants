@@ -11,7 +11,7 @@ It is a fast and flexible collection of helpers for specific type projects: this
 
 Simply put the repository in the same folder as your type project repositories. 
 
-The binding script that is specific for each project is the only source that lives inside each project repository. The GettingStarted.md shows a step-by-step development of specific project Assistants, starting from scratch. Since different project may need a different set of tools, the actual selection of assistant sub-classes is done here.
+The binding script that is specific for each project is the only source that lives inside each project repository. The GETTING_STARTED.md shows a step-by-step development of specific project Assistants, starting from scratch. Since different project may need a different set of tools, the actual selection of assistant sub-classes is done here.
 
 ## Github
 
@@ -51,7 +51,7 @@ Or install from a cloned repository in your local Python version by (@@@ Does no
 
 In the context of this repository, “Helpers” are scripts that can be run without any coding. They are generic tools that perform a specifc task, such as the editing of curves or building PDF proofs. “Helpers can best be compared with existing tools that live inside the RoboFont extension menu, maintained by Mechanic.
 
-With the pip-installer not working yet, it’s possible to run the helpers directly from this repository. Open the current version of GlyphBrowser.py in RoboFont and run the code. If there is a UFO open, the browser will show a list of all other UFO’s in the same directory, filtering on romand/italic and showing the superset of all glyphs that exist in all masters. 
+With the pip-installer not working yet, it’s possible to run the helpers directly from this repository. Open the current version of GlyphBrowser005.py in RoboFont and run the code. If there is a UFO open, the browser will show a list of all other UFO’s in the same directory, filtering on romand/italic and showing the superset of all glyphs that exist in all masters. 
 
 Double click on one of the glyphs will open an EditorWindow on that glyph for the selected UFO.
 
